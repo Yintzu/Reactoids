@@ -34,7 +34,7 @@ function App() {
   const [keysPressed, setKeysPressed] = useState([])
   const [score, setScore] = useState(0)
   const [titleScreen, setTitleScreen] = useState(true)
-  const [showDevTools, setShowDevTools] = useState(true)
+  const [showDevTools, setShowDevTools] = useState(false)
 
   // const playerDeathAudio = useRef(new Audio(playerExplode))
   // playerDeathAudio.current.volume = 0.5
