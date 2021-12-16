@@ -7,14 +7,16 @@ const usePlayerBullets = (player) => {
 
   const speed = 4
   const cooldownTime = 200
+  const width = 5
+  const height = 5
 
   const bulletTemplate = {
     id: idGen(),
     angle: player.angle,
-    x: player.x + player.width / 2,
-    y: player.y + player.height / 2,
-    width: 5,
-    height: 5,
+    width: width,
+    height: height,
+    x: player.x + player.width / 2 - width / 2,
+    y: player.y + player.height / 2 - height / 2,
     xVelocity: 0 + speed * Math.sin(degToRad(player.angle)),
     yVelocity: 0 - speed * Math.cos(degToRad(player.angle)),
     path: Bullet

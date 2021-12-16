@@ -10,7 +10,7 @@ const Asteroid = ({ data }) => {
   }
 
   return (
-    <img src={data.path} style={asteroidStyle} alt="An asteroid"/>
+    <img src={data.path} className='asteroid' style={asteroidStyle} alt="An asteroid"/>
   )
 }
 

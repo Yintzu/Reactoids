@@ -1,6 +1,15 @@
 @font-face {
-  font-family: 'Arcade';
-  src: local('Arcade'), url('./assets/ARCADE.TTF'), format('truetype');
+  font-family: "Arcade";
+  src: local("Arcade"), url("./assets/ARCADE.TTF"), format("truetype");
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 body {
@@ -23,7 +32,7 @@ img {
 }
 
 .gameScreen {
-  font-family: 'Arcade';
+  font-family: "Arcade";
   display: flex;
   justify-content: center;
   align-items: center;
@@ -35,7 +44,7 @@ img {
   font-size: 1.5rem;
 }
 
-.titleScreen{
+.titleScreen {
   width: 100%;
   height: 100%;
   display: flex;
@@ -46,11 +55,11 @@ img {
 }
 
 .titleScreen h1 {
- font-size: 5rem;
- margin: 1rem 0;
+  font-size: 5rem;
+  margin: 1rem 0;
 }
 
-.titleScreen p{
+.titleScreen p {
   font-size: 2.5rem;
   margin: 0;
 }
@@ -72,24 +81,39 @@ img {
   right: 10px;
 }
 
-.gameOver{
-  font-size: 2.5rem;
+.gameOver {
   width: 100%;
   height: 100%;
   text-align: center;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   pointer-events: initial;
 }
 
-.ingame{
+.gameOverText {
+  font-size: 3rem;
+}
+
+.gameOver p {
+  margin: 0;
+}
+
+.ingame {
   pointer-events: none;
   width: 100%;
   height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+/* .asteroid {
+  animation: fadeIn 2s
+} */
+.flashing {
+  animation: fadeIn 0.4s infinite ease-in-out alternate;
 }
 
 .ingame > img {

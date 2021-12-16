@@ -12,9 +12,6 @@ const importAll = (r) => r.keys().map(r)
 const AsteroidSmallSprites = importAll(require.context('../assets/AsteroidsSmall', false, /\.(png|jpe?g|svg)$/))
 const AsteroidMediumSprites = importAll(require.context('../assets/AsteroidsMedium', false, /\.(png|jpe?g|svg)$/))
 
-console.log(`AsteroidSmallSprites`, AsteroidSmallSprites)
-console.log(`AsteroidMediumSprites`, AsteroidMediumSprites)
-
 const useUtilities = (screenWidth, screenHeight) => {
 
   const spawnSafety = 200

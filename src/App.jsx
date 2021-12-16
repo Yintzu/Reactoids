@@ -14,8 +14,9 @@ function App() {
   const screenHeight = 800
 
   const rotationSpeed = 2
-  const thrustSpeed = 0.05
+  const thrustSpeed = 0.03
   const respawnTime = 1500
+  const invulnerabilityTime = 3000
 
   const playerTemplate = {
     angle: 0,
@@ -26,14 +27,18 @@ function App() {
     xVelocity: 0,
     yVelocity: 0,
     isAlive: true,
+    invulnerable: true,
   }
 
   const [player, setPlayer] = useState(playerTemplate)
   const [keysPressed, setKeysPressed] = useState([])
   const [score, setScore] = useState(0)
   const [titleScreen, setTitleScreen] = useState(true)
+  const [showDevTools, setShowDevTools] = useState(true)
+
   // const playerDeathAudio = useRef(new Audio(playerExplode))
   // playerDeathAudio.current.volume = 0.5
+
   const playerLives = useRef(3)
   const gameLoop = useRef(false)
   const update = useRef()
@@ -58,6 +63,10 @@ function App() {
           setTimeout(() => {
             console.log("respawn")
             setPlayer(playerTemplate)
+            //Spawn protection
+            setTimeout(() => {
+              setPlayer(prev => ({ ...prev, invulnerable: false }))
+            }, invulnerabilityTime)
           }, respawnTime)
         }
       }
@@ -138,7 +147,7 @@ function App() {
   const startGame = () => {
     playerLives.current = 3
     setScore(0)
-    setPlayer(playerTemplate)
+    setPlayer({...playerTemplate, invulnerable: false})
     setTitleScreen(false)
     gameobjects.current = []
     currentStage.current = 0
@@ -177,7 +186,7 @@ function App() {
     euclideanTorus(gameobjects.current)
 
     //Collision checks
-    playerCollisionCheck()
+    if (!player.invulnerable) playerCollisionCheck()
     playerBulletsCollisionCheck()
 
     //Quit check
@@ -209,7 +218,7 @@ function App() {
           <div className="ingame">
             <div className="lives">
               <span>Lives:</span>
-              {[...Array(playerLives.current)].map((item, i) => (<img src={PlayerSprite} key={i} alt="A life"/>))}
+              {[...Array(playerLives.current)].map((item, i) => (<img src={PlayerSprite} key={i} alt="A life" />))}
             </div>
 
             <div className="score">
@@ -217,10 +226,11 @@ function App() {
             </div>
 
             {!playerLives.current && <div className="gameOver" onClick={startGame}>
-              <p >Game Over</p>
+              <p className='gameOverText'>Game Over</p>
+              <p>- Click to Restart -</p>
             </div>}
 
-            <img src={PlayerSprite} className={`player${!player.isAlive && ' hide'}`} style={playerStyle} alt="Player ship controlled by you."/>
+            <img src={PlayerSprite} className={`player ${!player.isAlive && 'hide'} ${player.invulnerable && 'flashing'}`} style={playerStyle} alt="Player ship controlled by you." />
 
             {gameobjects.current.map((item, i) => (
               <Asteroid data={item} key={i} />
@@ -231,26 +241,28 @@ function App() {
           </div>
         }
       </div>
-      <div className="devTools">
-        <span className="fps">FPS: {String(fps.current)}</span>
-        <button className="gameLoopBtn" onClick={handleGameLoopToggle}>GameLoop: {gameLoop.current ? 'ON' : 'OFF'}</button>
-        <section>
-          <span>Small Asteroids</span>
-          <div className="devBtnRow">
-            <button className="removeBtn" onClick={() => gameobjects.current.splice(-5, 5)}>-5</button>
-            <button className="removeBtn" onClick={() => gameobjects.current.pop()}>-</button>
-            <button className="addBtn" onClick={() => addGameObject(player, gameobjects.current, AsteroidsSmall)}>+</button>
-            <button className="addBtn" onClick={() => addGameObject(player, gameobjects.current, AsteroidsSmall, 5)}>+5</button>
-          </div>
-        </section>
-        <section>
-          <span>Medium Asteroids</span>
-          <div className="devBtnRow">
-            <button className="removeBtn" onClick={() => gameobjects.current.pop()}>-</button>
-            <button className="addBtn" onClick={() => addGameObject(player, gameobjects.current, AsteroidsMedium)}>+</button>
-          </div>
-        </section>
-      </div>
+      {showDevTools &&
+        <div className="devTools">
+          <span className="fps">FPS: {String(fps.current)}</span>
+          <button className="gameLoopBtn" onClick={handleGameLoopToggle}>GameLoop: {gameLoop.current ? 'ON' : 'OFF'}</button>
+          <section>
+            <span>Small Asteroids</span>
+            <div className="devBtnRow">
+              <button className="removeBtn" onClick={() => gameobjects.current.splice(-5, 5)}>-5</button>
+              <button className="removeBtn" onClick={() => gameobjects.current.pop()}>-</button>
+              <button className="addBtn" onClick={() => addGameObject(player, gameobjects.current, AsteroidsSmall)}>+</button>
+              <button className="addBtn" onClick={() => addGameObject(player, gameobjects.current, AsteroidsSmall, 5)}>+5</button>
+            </div>
+          </section>
+          <section>
+            <span>Medium Asteroids</span>
+            <div className="devBtnRow">
+              <button className="removeBtn" onClick={() => gameobjects.current.pop()}>-</button>
+              <button className="addBtn" onClick={() => addGameObject(player, gameobjects.current, AsteroidsMedium)}>+</button>
+            </div>
+          </section>
+        </div>
+      }
     </div >
   )
 }
