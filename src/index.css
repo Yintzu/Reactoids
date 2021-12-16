@@ -1,13 +1,133 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@font-face {
+  font-family: 'Arcade';
+  src: local('Arcade'), url('./assets/ARCADE.TTF'), format('truetype');
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+body {
+  margin: 0;
+  font-family: "Monospace";
+}
+
+img {
+  image-rendering: pixelated;
+}
+
+.App {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+  background: rgb(0, 0, 0);
+  overflow: hidden;
+}
+
+.gameScreen {
+  font-family: 'Arcade';
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: black;
+  color: white;
+  position: relative;
+  box-shadow: 0 0 0 2px white, 0 0 0 4px black, 0 0 0 8px white;
+  overflow: hidden;
+  font-size: 1.5rem;
+}
+
+.titleScreen{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  cursor: default;
+}
+
+.titleScreen h1 {
+ font-size: 5rem;
+ margin: 1rem 0;
+}
+
+.titleScreen p{
+  font-size: 2.5rem;
+  margin: 0;
+}
+
+.lives {
+  position: absolute;
+  top: 5px;
+  left: 10px;
+}
+
+.lives span {
+  font-size: 1.5rem;
+  display: block;
+}
+
+.score {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+}
+
+.gameOver{
+  font-size: 2.5rem;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: initial;
+}
+
+.ingame{
+  pointer-events: none;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ingame > img {
+  position: absolute;
+  display: block;
+}
+
+.hide {
+  display: none !important;
+}
+
+.devTools {
+  color: white;
+  position: fixed;
+  top: 5px;
+  right: 5px;
+  display: flex;
+  flex-direction: column;
+}
+
+.devTools section {
+  margin: 1rem 0 0 0;
+}
+
+.devBtnRow {
+  display: flex;
+  justify-content: space-between;
+}
+
+.devBtnRow > * {
+  flex: 1;
+}
+
+.devTools span {
+  font-weight: bold;
+}
+
+.fps {
+  font-weight: bold;
+  font-size: 2rem;
 }
