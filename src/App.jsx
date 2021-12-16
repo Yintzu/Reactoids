@@ -217,12 +217,12 @@ function App() {
         {!titleScreen &&
           <div className="ingame">
             <div className="lives">
-              <span>Lives:</span>
+              <p>Lives:</p>
               {[...Array(playerLives.current)].map((item, i) => (<img src={PlayerSprite} key={i} alt="A life" />))}
             </div>
 
             <div className="score">
-              <span>Score: {score}</span>
+              <p>Score: {score}</p>
             </div>
 
             {!playerLives.current && <div className="gameOver" onClick={startGame}>

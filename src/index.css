@@ -1,6 +1,17 @@
+/* @font-face {
+  font-family: "arcadeclassic";
+  src: url("./assets/arcadeclassic-webfont.woff2") format("woff2"), url("./assets/arcadeclassic-webfont.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+} */
+
 @font-face {
-  font-family: "Arcade";
-  src: local("Arcade"), url("./assets/ARCADE.TTF"), format("truetype");
+  font-family: 'arcaderegular';
+  src: url('./assets/arcade-webfont.woff2') format('woff2'),
+       url('./assets/arcade-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+
 }
 
 @keyframes fadeIn {
@@ -12,13 +23,12 @@
   }
 }
 
-:root{
-  --TUTORIAL_KEY_HEIGHT: 40px
+:root {
+  --TUTORIAL_KEY_HEIGHT: 40px;
 }
 
 body {
   margin: 0;
-  font-family: "Monospace";
 }
 
 img {
@@ -36,7 +46,7 @@ img {
 }
 
 .gameScreen {
-  font-family: "Arcade";
+  font-family: "arcaderegular";
   display: flex;
   justify-content: center;
   align-items: center;
@@ -72,6 +82,7 @@ img {
   display: flex;
   gap: 30px;
   margin-top: 3rem;
+  font-weight: bold;
 }
 
 .tutorialKeys {
@@ -90,17 +101,16 @@ img {
   height: var(--TUTORIAL_KEY_HEIGHT);
 }
 
-.tutorialShoot{
+.tutorialShoot {
   display: flex;
-  /* align-items: flex-end; */
   flex-direction: column;
   flex: end;
-  /* justify-content: center; */
 }
 
 .tutorialShoot p {
-  font-size: 1.5rem;
+  font-size: 2rem;
   margin: auto;
+  font-weight: initial;
 }
 
 .tutorialSpaceKey {
@@ -112,16 +122,17 @@ img {
   height: var(--TUTORIAL_KEY_HEIGHT);
 }
 
+.lives p, .score p{
+ font-size: 2rem;
+ margin: 0;
+}
+
 .lives {
   position: absolute;
   top: 5px;
   left: 10px;
 }
 
-.lives span {
-  font-size: 1.5rem;
-  display: block;
-}
 
 .score {
   position: absolute;
