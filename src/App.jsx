@@ -14,7 +14,7 @@ function App() {
   const screenHeight = 800
 
   const rotationSpeed = 250
-  const thrustSpeed = 3
+  const thrustSpeed = 3.5
   const respawnTime = 1500
   const invulnerabilityTime = 3000
 
