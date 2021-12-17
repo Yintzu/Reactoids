@@ -13,8 +13,8 @@ function App() {
   const screenWidth = 800
   const screenHeight = 800
 
-  const rotationSpeed = 2
-  const thrustSpeed = 0.03
+  const rotationSpeed = 250
+  const thrustSpeed = 3
   const respawnTime = 1500
   const invulnerabilityTime = 3000
 
@@ -129,8 +129,8 @@ function App() {
       yVelocity: prev.yVelocity - thrustSpeed * Math.cos(degToRad(player.angle)),
     }))
     if (keysPressed.includes("a")) setPlayer(prev => {
-      if (prev.angle - rotationSpeed < 0) return { ...prev, angle: prev.angle - rotationSpeed + 360 }
-      return { ...prev, angle: prev.angle - rotationSpeed }
+      if (prev.angle /* - rotationSpeed */ < 0) return { ...prev, angle: prev.angle - rotationSpeed * deltaTime.current + 360 }
+      return { ...prev, angle: prev.angle - rotationSpeed * deltaTime.current }
     })
     if (keysPressed.includes("s")) setPlayer(prev => ({
       ...prev,
@@ -138,8 +138,8 @@ function App() {
       yVelocity: prev.yVelocity + thrustSpeed * Math.cos(degToRad(player.angle)),
     }))
     if (keysPressed.includes("d")) setPlayer(prev => {
-      if (prev.angle + rotationSpeed > 360) return { ...prev, angle: prev.angle + rotationSpeed - 360 }
-      return { ...prev, angle: prev.angle + rotationSpeed }
+      if (prev.angle /* + rotationSpeed */ > 360) return { ...prev, angle: prev.angle + rotationSpeed * deltaTime.current - 360 }
+      return { ...prev, angle: prev.angle + rotationSpeed * deltaTime.current }
     })
     if (keysPressed.includes(" ")) createBullet()
   }
@@ -147,7 +147,7 @@ function App() {
   const startGame = () => {
     playerLives.current = 3
     setScore(0)
-    setPlayer({...playerTemplate, invulnerable: false})
+    setPlayer({ ...playerTemplate, invulnerable: false })
     setTitleScreen(false)
     gameobjects.current = []
     currentStage.current = 0
@@ -171,14 +171,14 @@ function App() {
     keyInputController()
 
     //Update position
-    setPlayer(prev => ({ ...prev, x: prev.x + prev.xVelocity, y: prev.y + prev.yVelocity }))
+    setPlayer(prev => ({ ...prev, x: prev.x + prev.xVelocity * deltaTime.current, y: prev.y + prev.yVelocity * deltaTime.current }))
     setPlayerBullets(prev => prev.map(bullet => {
-      return { ...bullet, x: bullet.x + bullet.xVelocity, y: bullet.y + bullet.yVelocity }
+      return { ...bullet, x: bullet.x + bullet.xVelocity * deltaTime.current, y: bullet.y + bullet.yVelocity * deltaTime.current }
     }))
     gameobjects.current.forEach(item => {
-      item.x = item.x + item.xVelocity
-      item.y = item.y + item.yVelocity
-      item.angle = item.angle + item.rotationSpeed
+      item.x = item.x + item.xVelocity * deltaTime.current
+      item.y = item.y + item.yVelocity * deltaTime.current
+      item.angle = item.angle + item.rotationSpeed * deltaTime.current
     })
 
     euclideanTorus(player, setPlayer)

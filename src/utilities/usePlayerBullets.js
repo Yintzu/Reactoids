@@ -5,7 +5,7 @@ import useUtilities from './useUtilities'
 const usePlayerBullets = (player) => {
   const { degToRad, idGen } = useUtilities()
 
-  const speed = 4
+  const speed = 500
   const cooldownTime = 200
   const width = 5
   const height = 5

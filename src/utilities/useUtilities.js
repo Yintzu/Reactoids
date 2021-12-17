@@ -15,6 +15,8 @@ const AsteroidMediumSprites = importAll(require.context('../assets/AsteroidsMedi
 const useUtilities = (screenWidth, screenHeight) => {
 
   const spawnSafety = 200
+  const asteroidSpeed = 200
+  const asteroidRotationSpeed = 30
 
   const AsteroidsSmall = [
     {
@@ -38,6 +40,8 @@ const useUtilities = (screenWidth, screenHeight) => {
       path: AsteroidSmall3,
     },
   ]
+
+  // console.log(`deltaTime.current`, deltaTime?.current)
 
   const AsteroidsMedium = [AsteroidMedium0, AsteroidMedium1, AsteroidMedium2, AsteroidMedium3].map(item => ({ width: 64, height: 61, path: item }))
 
@@ -82,10 +86,10 @@ const useUtilities = (screenWidth, screenHeight) => {
   const objectTemplate = () => {
     return {
       id: idGen(),
-      xVelocity: (Math.random() - 0.5) * 2,
-      yVelocity: (Math.random() - 0.5) * 2,
+      xVelocity: (Math.random() - 0.5) * asteroidSpeed,
+      yVelocity: (Math.random() - 0.5) * asteroidSpeed,
       angle: Math.floor(Math.random() * 360),
-      rotationSpeed: (Math.random() - 0.5) * 0.3,
+      rotationSpeed: (Math.random() - 0.5) * asteroidRotationSpeed,
     }
   }
 
