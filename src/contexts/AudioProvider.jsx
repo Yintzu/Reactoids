@@ -15,7 +15,7 @@ const AudioProvider = (props) => {
   const [asteroidExplode0Audio] = useState(new Audio(AsteroidExplode0Path))
 
   deathAudio.volume = volume
-  shootBulletAudio.volume = 0.03
+  shootBulletAudio.volume = volume / 3
   asteroidExplode0Audio.volume = volume
 
   const values = {

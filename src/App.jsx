@@ -8,6 +8,7 @@ import { useAudioContext } from './contexts/AudioProvider'
 import usePlayerBullets from './utilities/usePlayerBullets'
 import useStageHandler from './utilities/useStageHandler'
 import useUtilities from './utilities/useUtilities.js'
+import ParticleEmitter from './components/ParticleEmitter'
 
 function App() {
   //Settings
@@ -32,6 +33,7 @@ function App() {
   }
 
   const [player, setPlayer] = useState(playerTemplate)
+  const [particleObjects, setParticleObjects] = useState([])
   const [keysPressed, setKeysPressed] = useState([])
   const [score, setScore] = useState(0)
   const [titleScreen, setTitleScreen] = useState(true)
@@ -90,6 +92,8 @@ function App() {
             asteroidExplode0Audio.currentTime = 0
             asteroidExplode0Audio.play()
 
+            console.log(`object data at collision point`, gameobject)
+            setParticleObjects(prev => [...prev, { id: gameobject.id, x: gameobject.x, y: gameobject.y }])
             gameobjects.current = gameobjects.current.filter(item => item.id !== gameobject.id)
 
             //Starts next stage
@@ -158,7 +162,9 @@ function App() {
       gameLoop.current = true
       requestAnimationFrame(update.current)
     }
-    nextStageCheck(player, gameobjects.current)
+    setTimeout(() => {
+      nextStageCheck(player, gameobjects.current)
+    }, 1000)
   }
 
   //----------------------------
@@ -203,7 +209,6 @@ function App() {
   //-----------------------------------
 
   useEffect(() => {
-    // update.current()
     requestAnimationFrame(update.current)
   }, [])
 
@@ -227,6 +232,8 @@ function App() {
             <div className="score">
               <p>Score: {score}</p>
             </div>
+
+            {particleObjects.map(object => <ParticleEmitter key={object.id} data={object} setParticleObjects={setParticleObjects} />)}
 
             {!playerLives.current && <div className="gameOver" onClick={startGame}>
               <p className='gameOverText'>Game Over</p>
