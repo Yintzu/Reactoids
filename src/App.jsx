@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import PlayerSprite from './assets/Player.png'
+import DevTools from './components/DevTools'
 import Asteroid from './components/gameobjects/Asteroid'
 import PlayerBullet from './components/gameobjects/PlayerBullet'
 import TitleScreen from './components/TitleScreen'
+import { useAudioContext } from './contexts/AudioProvider'
 import usePlayerBullets from './utilities/usePlayerBullets'
 import useStageHandler from './utilities/useStageHandler'
 import useUtilities from './utilities/useUtilities.js'
-// import playerExplode from './assets/sound/playerExplode.wav'
 
 function App() {
   //Settings
@@ -34,10 +35,7 @@ function App() {
   const [keysPressed, setKeysPressed] = useState([])
   const [score, setScore] = useState(0)
   const [titleScreen, setTitleScreen] = useState(true)
-  const [showDevTools, setShowDevTools] = useState(false)
-
-  // const playerDeathAudio = useRef(new Audio(playerExplode))
-  // playerDeathAudio.current.volume = 0.5
+  const [showDevTools, setShowDevTools] = useState(true)
 
   const playerLives = useRef(3)
   const gameLoop = useRef(false)
@@ -47,6 +45,7 @@ function App() {
   const oldTimestamp = useRef(null)
   const fps = useRef(null)
 
+  const { deathAudio, asteroidExplode0Audio } = useAudioContext()
   const { playerBullets, setPlayerBullets, createBullet } = usePlayerBullets(player)
   const { degToRad, AsteroidsSmall, AsteroidsMedium, addGameObject, checkOverlap, euclideanTorus } = useUtilities(screenWidth, screenHeight)
   const { nextStageCheck, currentStage } = useStageHandler(screenWidth, screenHeight)
@@ -54,8 +53,7 @@ function App() {
   const playerCollisionCheck = () => {
     gameobjects.current.forEach(object => {
       if (player.isAlive && checkOverlap(object, player)) {
-        // console.log("played audio");
-        // playerDeathAudio.current.play()
+        deathAudio.play()
         console.log("crashed and died")
         setPlayer({ ...playerTemplate, isAlive: false })
         playerLives.current--
@@ -87,6 +85,11 @@ function App() {
             } else {
               setScore(prev => prev + 50)
             }
+
+            asteroidExplode0Audio.pause()
+            asteroidExplode0Audio.currentTime = 0
+            asteroidExplode0Audio.play()
+
             gameobjects.current = gameobjects.current.filter(item => item.id !== gameobject.id)
 
             //Starts next stage
@@ -190,7 +193,7 @@ function App() {
     playerBulletsCollisionCheck()
 
     //Quit check
-    if (gameLoop.current === false) return console.log("quit the loop")
+    if (!gameLoop.current) return console.log("quit the loop")
 
     //Restart loop
     requestAnimationFrame(update.current)
@@ -242,26 +245,7 @@ function App() {
         }
       </div>
       {showDevTools &&
-        <div className="devTools">
-          <span className="fps">FPS: {String(fps.current)}</span>
-          <button className="gameLoopBtn" onClick={handleGameLoopToggle}>GameLoop: {gameLoop.current ? 'ON' : 'OFF'}</button>
-          <section>
-            <span>Small Asteroids</span>
-            <div className="devBtnRow">
-              <button className="removeBtn" onClick={() => gameobjects.current.splice(-5, 5)}>-5</button>
-              <button className="removeBtn" onClick={() => gameobjects.current.pop()}>-</button>
-              <button className="addBtn" onClick={() => addGameObject(player, gameobjects.current, AsteroidsSmall)}>+</button>
-              <button className="addBtn" onClick={() => addGameObject(player, gameobjects.current, AsteroidsSmall, 5)}>+5</button>
-            </div>
-          </section>
-          <section>
-            <span>Medium Asteroids</span>
-            <div className="devBtnRow">
-              <button className="removeBtn" onClick={() => gameobjects.current.pop()}>-</button>
-              <button className="addBtn" onClick={() => addGameObject(player, gameobjects.current, AsteroidsMedium)}>+</button>
-            </div>
-          </section>
-        </div>
+        <DevTools player={player} fps={fps} gameobjects={gameobjects} gameLoop={gameLoop} handleGameLoopToggle={handleGameLoopToggle} addGameObject={addGameObject} />
       }
     </div >
   )

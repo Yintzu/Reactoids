@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import Bullet from '../assets/Bullet.png'
+import { useAudioContext } from '../contexts/AudioProvider'
 import useUtilities from './useUtilities'
 
 const usePlayerBullets = (player) => {
   const { degToRad, idGen } = useUtilities()
+  const { shootBulletAudio } = useAudioContext()
 
   const speed = 500
   const cooldownTime = 200
@@ -27,6 +29,9 @@ const usePlayerBullets = (player) => {
 
   const createBullet = () => {
     if (weaponCooldown) return
+    shootBulletAudio.pause()
+    shootBulletAudio.currentTime = 0
+    shootBulletAudio.play()
     setPlayerBullets(prev => [...prev, { ...bulletTemplate }])
     setWeaponCooldown(true)
     setTimeout(() => {
