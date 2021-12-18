@@ -49,7 +49,7 @@ function App() {
 
   const { deathAudio, asteroidExplode0Audio } = useAudioContext()
   const { playerBullets, setPlayerBullets, createBullet } = usePlayerBullets(player)
-  const { degToRad, AsteroidsSmall, AsteroidsMedium, addGameObject, checkOverlap, euclideanTorus } = useUtilities(screenWidth, screenHeight)
+  const { degToRad, AsteroidsSmall, /* AsteroidsMedium, */ addGameObject, checkOverlap, euclideanTorus } = useUtilities(screenWidth, screenHeight)
   const { nextStageCheck, currentStage } = useStageHandler(screenWidth, screenHeight)
 
   const playerCollisionCheck = () => {
@@ -92,8 +92,7 @@ function App() {
             asteroidExplode0Audio.currentTime = 0
             asteroidExplode0Audio.play()
 
-            console.log(`object data at collision point`, gameobject)
-            setParticleObjects(prev => [...prev, { id: gameobject.id, x: gameobject.x, y: gameobject.y }])
+            setParticleObjects(prev => [...prev, { id: gameobject.id, x: gameobject.x, y: gameobject.y, angle: gameobject.angle }])
             gameobjects.current = gameobjects.current.filter(item => item.id !== gameobject.id)
 
             //Starts next stage
@@ -220,6 +219,7 @@ function App() {
 
   return (
     <div className="App" onKeyDown={handleKeyDown} onKeyUp={handleKeyUp} tabIndex="0">
+      <div style={{width: '30px', height: '30px', position: 'fixed', bottom: '0', right: '0'}} onClick={() =>setShowDevTools(!showDevTools)}></div>
       <div className="gameScreen" style={{ width: screenWidth, height: screenHeight }}>
         {titleScreen && <TitleScreen startGame={startGame} />}
         {!titleScreen &&
