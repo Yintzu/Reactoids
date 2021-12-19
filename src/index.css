@@ -140,7 +140,7 @@ img {
   right: 10px;
 }
 
-.gameOver {
+.gameOver, .highscore {
   width: 100%;
   height: 100%;
   text-align: center;
@@ -151,11 +151,16 @@ img {
   pointer-events: initial;
 }
 
-.gameOverText {
+.gameOverText, .highscoreText {
   font-size: 3rem;
 }
 
 .gameOver p {
+  margin: 0;
+}
+
+.highscoreItem{
+  font-size: 2rem;
   margin: 0;
 }
 

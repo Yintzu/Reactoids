@@ -9,6 +9,8 @@ import usePlayerBullets from './utilities/usePlayerBullets'
 import useStageHandler from './utilities/useStageHandler'
 import useUtilities from './utilities/useUtilities.js'
 import ParticleEmitter from './components/ParticleEmitter'
+import useFirebase from './utilities/useFirebase'
+import EndScreen from './components/EndScreen'
 
 function App() {
   //Settings
@@ -51,6 +53,7 @@ function App() {
   const { playerBullets, setPlayerBullets, createBullet } = usePlayerBullets(player)
   const { degToRad, AsteroidsSmall, /* AsteroidsMedium, */ addGameObject, checkOverlap, euclideanTorus } = useUtilities(screenWidth, screenHeight)
   const { nextStageCheck, currentStage } = useStageHandler(screenWidth, screenHeight)
+  const { highscore } = useFirebase()
 
   const playerCollisionCheck = () => {
     gameobjects.current.forEach(object => {
@@ -219,7 +222,7 @@ function App() {
 
   return (
     <div className="App" onKeyDown={handleKeyDown} onKeyUp={handleKeyUp} tabIndex="0">
-      <div style={{width: '30px', height: '30px', position: 'fixed', bottom: '0', right: '0'}} onClick={() =>setShowDevTools(!showDevTools)}></div>
+      <div style={{ width: '30px', height: '30px', position: 'fixed', bottom: '0', right: '0' }} onClick={() => setShowDevTools(!showDevTools)}></div>
       <div className="gameScreen" style={{ width: screenWidth, height: screenHeight }}>
         {titleScreen && <TitleScreen startGame={startGame} />}
         {!titleScreen &&
@@ -235,18 +238,20 @@ function App() {
 
             {particleObjects.map(object => <ParticleEmitter key={object.id} data={object} setParticleObjects={setParticleObjects} />)}
 
+            <EndScreen highscore={highscore} startGame={startGame} />
             {!playerLives.current && <div className="gameOver" onClick={startGame}>
               <p className='gameOverText'>Game Over</p>
               <p>- Click to Restart -</p>
             </div>}
 
+            {playerBullets.map((item, i) => (
+              <PlayerBullet data={item} setPlayerBullets={setPlayerBullets} key={i} />
+            ))}
+
             <img src={PlayerSprite} className={`player ${!player.isAlive && 'hide'} ${player.invulnerable && 'flashing'}`} style={playerStyle} alt="Player ship controlled by you." />
 
             {gameobjects.current.map((item, i) => (
               <Asteroid data={item} key={i} />
-            ))}
-            {playerBullets.map((item, i) => (
-              <PlayerBullet data={item} setPlayerBullets={setPlayerBullets} key={i} />
             ))}
           </div>
         }
