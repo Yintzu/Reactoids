@@ -185,7 +185,6 @@ img {
   color: white;
   outline: none;
   border-style: none;
-  /* user-select: none; */
   caret-color: transparent;
   border-bottom: 4px solid white;
   background: black;
@@ -193,6 +192,7 @@ img {
   height: 25px;
   display: inline-block;
   margin: 0 0.5rem;
+  pointer-events: none;
 }
 
 .nameInputWrapper input:focus{

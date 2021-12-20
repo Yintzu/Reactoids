@@ -15,6 +15,10 @@ const EndScreen = ({ startGame, highscore }) => {
     inputRefs.current[nameInput.length].focus()
   }
 
+  const handleKeyDown = (e) => {
+    if (["Backspace", "Delete"].includes(e.key)) setNameInput(prev => prev.slice(0, -1))
+  }
+
   const fillDots = (item) => {
     return '.'.repeat(35 - (item.name.length + String(item.score).length))
   }
@@ -24,8 +28,8 @@ const EndScreen = ({ startGame, highscore }) => {
   }
 
   useEffect(() => {
-    inputRefs.current[nameInput.length].focus()
-  })
+    if (nameInput.length < inputRefs.current.length) inputRefs.current[nameInput.length].focus()
+  }, [nameInput])
 
   return (
     <>
@@ -48,7 +52,7 @@ const EndScreen = ({ startGame, highscore }) => {
       {state === 2 &&
         <div className='nameInputWrapper' onClick={() => handleClick()}>
           <p>New Highscore!</p>
-          {[...Array(6)].map((item, i) => (<input type="text" key={i} className={``} value={nameInput[i] ?? ''} onChange={(e) => handleNameInput(e, i)} ref={fillRefs} />))}
+          {[...Array(6)].map((item, i) => (<input type="text" key={i} className={``} value={nameInput[i] ?? ''} onChange={(e) => handleNameInput(e, i)} onKeyDown={handleKeyDown} ref={fillRefs} />))}
         </div>
       }
     </>
