@@ -53,7 +53,7 @@ function App() {
   const { playerBullets, setPlayerBullets, createBullet } = usePlayerBullets(player)
   const { degToRad, AsteroidsSmall, /* AsteroidsMedium, */ addGameObject, checkOverlap, euclideanTorus } = useUtilities(screenWidth, screenHeight)
   const { nextStageCheck, currentStage } = useStageHandler(screenWidth, screenHeight)
-  const { highscore } = useFirebase()
+  const { highscore, postHighscore, deleteHighscore } = useFirebase()
 
   const playerCollisionCheck = () => {
     gameobjects.current.forEach(object => {
@@ -238,11 +238,13 @@ function App() {
 
             {particleObjects.map(object => <ParticleEmitter key={object.id} data={object} setParticleObjects={setParticleObjects} />)}
 
-            <EndScreen highscore={highscore} startGame={startGame} />
-            {!playerLives.current && <div className="gameOver" onClick={startGame}>
-              <p className='gameOverText'>Game Over</p>
-              <p>- Click to Restart -</p>
-            </div>}
+            {!playerLives.current &&
+              <EndScreen highscore={highscore} score={score} startGame={startGame} postHighscore={postHighscore} deleteHighscore={deleteHighscore} />
+              // <div className="gameOver" onClick={startGame}>
+              //   <p className='gameOverText'>Game Over</p>
+              //   <p>- Click to Restart -</p>
+              // </div>
+            }
 
             {playerBullets.map((item, i) => (
               <PlayerBullet data={item} setPlayerBullets={setPlayerBullets} key={i} />

@@ -1,22 +1,34 @@
 import React, { useEffect, useRef, useState } from 'react'
 
-const EndScreen = ({ startGame, highscore }) => {
+const EndScreen = ({ startGame, highscore, score, postHighscore, deleteHighscore }) => {
   const [state, setState] = useState(2)
-  const [nameInput, setNameInput] = useState('TEST')
+  const [nameInput, setNameInput] = useState('')
+  const [postedHighscoreId, setPostedHighscoreId] = useState(null)
   const inputRefs = useRef([])
 
-  const handleNameInput = (e, i) => {
+  const handleInputChange = (e, i) => {
     console.log("nameInput[i]", nameInput[i])
-    setNameInput(prev => (prev.substring(0, i) + e.target.value).toUpperCase() /* + prev.substring(i +1) */)
+    setNameInput(prev => (prev.substring(0, i) + e.target.value).toUpperCase())
   }
 
-  const handleClick = () => {
+  const handleClick = (e) => {
     console.log(inputRefs.current)
-    inputRefs.current[nameInput.length].focus()
+    if (nameInput.length < inputRefs.current.length) return inputRefs.current[nameInput.length].focus()
+    inputRefs.current[5].focus()
   }
 
   const handleKeyDown = (e) => {
-    if (["Backspace", "Delete"].includes(e.key)) setNameInput(prev => prev.slice(0, -1))
+    console.log(`e`, e)
+    if (["Backspace", "Delete"].includes(e.key)) return setNameInput(prev => prev.slice(0, -1))
+    if (e.key === 'Enter') handleSubmit(e)
+  }
+
+  const handleSubmit = async (e) => {
+    e.stopPropagation()
+    const postId = await postHighscore({ name: nameInput, score: score })
+    console.log(`postId from end screen`, postId)
+    setPostedHighscoreId(postId)
+    setState(1)
   }
 
   const fillDots = (item) => {
@@ -34,25 +46,28 @@ const EndScreen = ({ startGame, highscore }) => {
   return (
     <>
       {state === 0 &&
-        <div className="gameOver" onClick={() => setState(1)}>
-          <p className='gameOverText'>Game Over</p>
-          <p>- Click to Restart -</p>
+        <div className="gameOver" onClick={() => setState(2)}>
+          <p className='textLarge'>Game Over</p>
+          <p>- Click to continue -</p>
         </div>
       }
       {state === 1 &&
         <div className='highscore' onClick={startGame}>
-          <p className='highscoreText'>Highscore</p>
+          <p className='textLarge'>Highscore</p>
           {highscore &&
             <div className='highscoreList'>
-              {highscore.map((item, i) => (<p className='highscoreItem' style={{ '--delay': `${i / 10}s` }} key={item.id}>{item.name}<span>{fillDots(item)}</span>{item.score}</p>))}
+              {highscore.map((item, i) => (<p className={`highscoreItem ${item.id === postedHighscoreId && 'flashingYellow'}`} style={{ '--DELAY': `${i / 10}s` }} key={item.id}>{item.name}<span>{fillDots(item)}</span>{item.score}</p>))}
             </div>
           }
+          <p className='restartText'>- Click to restart -</p>
         </div>
       }
       {state === 2 &&
-        <div className='nameInputWrapper' onClick={() => handleClick()}>
-          <p>New Highscore!</p>
-          {[...Array(6)].map((item, i) => (<input type="text" key={i} className={``} value={nameInput[i] ?? ''} onChange={(e) => handleNameInput(e, i)} onKeyDown={handleKeyDown} ref={fillRefs} />))}
+        <div className='nameInputWrapper' onClick={handleClick}>
+          <p className='textLarge'>New Highscore!</p>
+          <p className='textLarge'>{score}</p>
+          {[...Array(6)].map((item, i) => (<input type="text" key={i} className={``} value={nameInput[i] ?? ''} onChange={(e) => handleInputChange(e, i)} onKeyDown={handleKeyDown} ref={fillRefs} />))}
+          <p className='submitButton'><span onClick={handleSubmit}>- Submit -</span></p>
         </div>
       }
     </>

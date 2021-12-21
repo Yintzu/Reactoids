@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "firebase/firestore"
+import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc } from "firebase/firestore"
 // import { getAnalytics } from "firebase/analytics";
 
 const firebaseConfig = {
@@ -15,19 +15,32 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig)
-// const analytics = getAnalytics(app);
 const db = getFirestore(app)
 console.log("initiated DB")
+// const analytics = getAnalytics(app);
 
 const collectionRef = collection(db, 'highscore')
+const queryRef = query(collectionRef, orderBy('score', 'desc'))
 
 
 const useFirebase = () => {
   const [highscore, setHighscore] = useState()
 
+  const postHighscore = async ({ name, score }) => {
+    const docRef = await addDoc(collectionRef, {
+      name,
+      score
+    })
+    return docRef.id
+  }
+
+  const deleteHighscore = async (id) => {
+    const deleteRef = doc(db, 'highscore', id)
+    await deleteDoc(deleteRef)
+  }
+
   useEffect(() => {
-    const unsub = onSnapshot(collectionRef, (snapshot) => {
-      // console.log(`snapshot`, snapshot)
+    const unsub = onSnapshot(queryRef, (snapshot) => {
       const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
       console.log(`data`, data)
       setHighscore(data)
@@ -37,7 +50,9 @@ const useFirebase = () => {
   }, [])
 
   return {
-    highscore
+    highscore,
+    postHighscore,
+    deleteHighscore
   }
 }
 

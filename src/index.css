@@ -21,8 +21,23 @@
   }
 }
 
+@keyframes flashYellow {
+  0% {
+    color: yellow;
+    opacity: 0.5;
+  }
+  100% {
+    color: rgb(255, 255, 0);
+    opacity: 1;
+  }
+}
+
 :root {
   --TUTORIAL_KEY_HEIGHT: 40px;
+  --FLASHING: fadeIn 0.4s infinite ease-in-out alternate;
+  --FLASHING_REVERSE: fadeIn 0.4s infinite ease-in-out alternate-reverse;
+  --FLASHING_YELLOW: flashYellow 0.3s ease-in-out infinite alternate;
+  --TEXT_LARGE: 3rem;
 }
 
 body {
@@ -32,6 +47,10 @@ body {
 
 img {
   image-rendering: pixelated;
+}
+
+.textLarge {
+  font-size: var(--TEXT_LARGE);
 }
 
 .App {
@@ -149,22 +168,40 @@ img {
   justify-content: center;
   align-items: center;
   pointer-events: initial;
-}
-
-.gameOverText,
-.highscoreText {
-  font-size: 3rem;
+  cursor: default;
 }
 
 .gameOver p {
   margin: 0;
 }
 
+.submitButton {
+  border: 2px solid white;
+  border-radius: 10px;
+  margin-top: 4rem;
+  width: 75%;
+  margin: 4rem auto 0 auto;
+}
+
+.submitButton > span {
+  cursor: pointer;
+  padding: 0.5rem 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.submitButton > span:hover {
+  animation: var(--FLASHING_REVERSE);
+}
+
 .highscoreItem {
   font-size: 2rem;
   margin: 0;
+  opacity: 0;
   animation: fadeIn 1s;
-  animation-delay: var();
+  animation-delay: var(--DELAY);
+  animation-fill-mode: forwards;
 }
 
 .highscoreItem span {
@@ -179,14 +216,14 @@ img {
 }
 
 .nameInputWrapper input {
-  font-family: 'arcaderegular';
+  font-family: "arcaderegular";
   text-align: center;
   font-size: 2rem;
   color: white;
   outline: none;
   border-style: none;
   caret-color: transparent;
-  border-bottom: 4px solid white;
+  border-bottom: 3px solid white;
   background: black;
   width: 25px;
   height: 25px;
@@ -195,8 +232,13 @@ img {
   pointer-events: none;
 }
 
-.nameInputWrapper input:focus{
-  animation: fadeIn 0.4s infinite ease-in-out alternate
+.nameInputWrapper input:focus {
+  animation: var(--FLASHING_REVERSE);
+}
+
+.restartText {
+  font-size: 2rem;
+  margin: 4rem 0 0 0;
 }
 
 .ingame {
@@ -208,11 +250,12 @@ img {
   align-items: center;
 }
 
-/* .asteroid {
-  animation: fadeIn 2s
-} */
 .flashing {
-  animation: fadeIn 0.4s infinite ease-in-out alternate;
+  animation: var(--FLASHING);
+}
+
+.flashingYellow {
+  animation: var(--FLASHING_YELLOW);
 }
 
 .ingame > img {
