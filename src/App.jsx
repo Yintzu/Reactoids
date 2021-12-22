@@ -224,7 +224,7 @@ function App() {
     <div className="App" onKeyDown={handleKeyDown} onKeyUp={handleKeyUp} tabIndex="0">
       <div style={{ width: '30px', height: '30px', position: 'fixed', bottom: '0', right: '0' }} onClick={() => setShowDevTools(!showDevTools)}></div>
       <div className="gameScreen" style={{ width: screenWidth, height: screenHeight }}>
-        {titleScreen && <TitleScreen startGame={startGame} />}
+        {titleScreen && <TitleScreen startGame={startGame} highscore={highscore} />}
         {!titleScreen &&
           <div className="ingame">
             <div className="lives">

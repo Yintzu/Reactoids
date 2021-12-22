@@ -38,6 +38,7 @@
   --FLASHING_REVERSE: fadeIn 0.4s infinite ease-in-out alternate-reverse;
   --FLASHING_YELLOW: flashYellow 0.3s ease-in-out infinite alternate;
   --TEXT_LARGE: 3rem;
+  --TEXT_MEDIUM: 2rem;
 }
 
 body {
@@ -51,6 +52,10 @@ img {
 
 .textLarge {
   font-size: var(--TEXT_LARGE);
+}
+
+.textMedium {
+  font-size: var(--TEXT_MEDIUM);
 }
 
 .App {
@@ -171,7 +176,7 @@ img {
   cursor: default;
 }
 
-.gameOver p {
+.gameOverText {
   margin: 0;
 }
 
@@ -205,7 +210,7 @@ img {
 }
 
 .highscoreItem span {
-  letter-spacing: 1;
+  letter-spacing: 7px;
 }
 
 .nameInputWrapper {

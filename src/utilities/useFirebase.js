@@ -24,7 +24,7 @@ const queryRef = query(collectionRef, orderBy('score', 'desc'))
 
 
 const useFirebase = () => {
-  const [highscore, setHighscore] = useState()
+  const [highscore, setHighscore] = useState([])
 
   const postHighscore = async ({ name, score }) => {
     const docRef = await addDoc(collectionRef, {
@@ -42,8 +42,8 @@ const useFirebase = () => {
   useEffect(() => {
     const unsub = onSnapshot(queryRef, (snapshot) => {
       const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-      console.log(`data`, data)
-      setHighscore(data)
+      console.log(`data from DB: `, data)
+      setHighscore(data.slice(0,9))
     })
 
     return unsub
