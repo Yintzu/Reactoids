@@ -5,10 +5,10 @@ const EndScreen = ({ startGame, highscore, score, postHighscore, deleteHighscore
   const [state, setState] = useState(0)
   const [nameInput, setNameInput] = useState('')
   const [postedHighscoreId, setPostedHighscoreId] = useState(null)
+  const [isLoading, setIsLoading] = useState(null)
   const inputRefs = useRef([])
 
   const handleInputChange = (e, i) => {
-    console.log("nameInput[i]", nameInput[i])
     setNameInput(prev => (prev.substring(0, i) + e.target.value).toUpperCase())
   }
 
@@ -23,18 +23,19 @@ const EndScreen = ({ startGame, highscore, score, postHighscore, deleteHighscore
   }
 
   const handleKeyDown = (e) => {
-    console.log(`e`, e)
     if (["Backspace", "Delete"].includes(e.key)) return setNameInput(prev => prev.slice(0, -1))
     if (e.key === 'Enter') handleSubmit(e)
   }
 
   const handleSubmit = async (e) => {
     e.stopPropagation()
+    if (isLoading) return
+    setIsLoading(true)
     if (highscore.length >= 10) await deleteHighscore(highscore[highscore.length - 1].id)
     const postId = await postHighscore({ name: nameInput, score: score })
-    console.log(`postId from end screen`, postId)
     setPostedHighscoreId(postId)
     setState(1)
+    setIsLoading(false)
   }
 
   const fillRefs = (el) => {

@@ -12,7 +12,7 @@ const TitleScreen = ({ startGame, highscore }) => {
   useEffect(() => {
     let timeout = setTimeout(() => {
       toggleState()
-    }, 5000)
+    }, 7000)
 
     return () => {
       clearTimeout(timeout)
@@ -26,7 +26,6 @@ const TitleScreen = ({ startGame, highscore }) => {
         <div className="titleScreen" onClick={() => startGame()}>
           <div>
             <h1>Reactoids</h1>
-            <p>- Click to start -</p>
             <div className='tutorial'>
               <div className='tutorialKeys'>
                 <div></div>
@@ -41,6 +40,7 @@ const TitleScreen = ({ startGame, highscore }) => {
                 <span className='tutorialSpaceKey'>Space</span>
               </div>
             </div>
+            <p className='textMedium mt-4'>- Click to start -</p>
           </div>
         </div>
       }

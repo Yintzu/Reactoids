@@ -56,6 +56,10 @@ const useUtilities = (screenWidth, screenHeight) => {
     return rad * (180 / Math.PI)
   }
 
+  const randomInteger = (min, max) => {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
   const checkOverlap = (object, object2) => {
     if (object2.x >= (object.x + object.width) || object.x >= (object2.x + object2.width)) return false
     if ((object2.y + object2.height) <= object.y || (object.y + object.height) <= object2.y) return false
@@ -123,6 +127,7 @@ const useUtilities = (screenWidth, screenHeight) => {
     AsteroidsMedium,
     degToRad,
     radToDeg,
+    randomInteger,
     addGameObject,
     idGen,
     checkOverlap,

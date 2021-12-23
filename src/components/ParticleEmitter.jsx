@@ -1,19 +1,19 @@
 import React, { useEffect } from 'react'
 import Particles from 'react-tsparticles'
-import { options } from '../utilities/particleOptions.js'
+import { options, optionsPlayer } from '../utilities/particleOptions.js'
 
 const ParticleEmitter = ({ data, setParticleObjects }) => {
 
-  const width = 100
-  const height = 100
+  const canvasWidth = data.id === 'player' ? 200 : 100
+  const canvasHeight = data.id === 'player' ? 200 : 100
 
   const style = {
     position: 'absolute',
-    left: `${data.x - width / 2}px`,
-    top: `${data.y - height / 2}px`,
-    width: `${width}px`,
-    height: `${height}px`,
-    transform: `rotate(${data.angle}deg)`,
+    left: `${data.x - canvasWidth / 2 + data.width / 2}px`,
+    top: `${data.y - canvasHeight / 2 + data.height / 2}px`,
+    width: `${canvasWidth}px`,
+    height: `${canvasHeight}px`,
+    // transform: `rotate(${data.angle}deg)`,
   }
 
   useEffect(() => {
@@ -24,7 +24,7 @@ const ParticleEmitter = ({ data, setParticleObjects }) => {
 
   return (
     <div className='particleEmitter' style={style}>
-      <Particles id={data.id} options={options} width={100} height={100} className='particleCanvasWrapper' />
+      <Particles id={data.id} options={data.id === 'player' ? optionsPlayer : options} width={canvasWidth} height={canvasHeight} className='particleCanvasWrapper' />
     </div>
   )
 }

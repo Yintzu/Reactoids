@@ -42,7 +42,6 @@ const useFirebase = () => {
   useEffect(() => {
     const unsub = onSnapshot(queryRef, (snapshot) => {
       const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-      console.log(`data from DB: `, data)
       setHighscore(data.slice(0, 10))
     })
 

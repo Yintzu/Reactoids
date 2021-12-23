@@ -39,7 +39,7 @@ function App() {
   const [keysPressed, setKeysPressed] = useState([])
   const [score, setScore] = useState(0)
   const [titleScreen, setTitleScreen] = useState(true)
-  const [showDevTools, setShowDevTools] = useState(true)
+  const [showDevTools, setShowDevTools] = useState(false)
 
   const playerLives = useRef(3)
   const gameLoop = useRef(false)
@@ -51,7 +51,7 @@ function App() {
 
   const { deathAudio, asteroidExplode0Audio } = useAudioContext()
   const { playerBullets, setPlayerBullets, createBullet } = usePlayerBullets(player)
-  const { degToRad, AsteroidsSmall, /* AsteroidsMedium, */ addGameObject, checkOverlap, euclideanTorus } = useUtilities(screenWidth, screenHeight)
+  const { degToRad, randomInteger, AsteroidsSmall, /* AsteroidsMedium, */ addGameObject, checkOverlap, euclideanTorus } = useUtilities(screenWidth, screenHeight)
   const { nextStageCheck, currentStage } = useStageHandler(screenWidth, screenHeight)
   const { highscore, postHighscore, deleteHighscore } = useFirebase()
 
@@ -60,9 +60,10 @@ function App() {
       if (player.isAlive && checkOverlap(object, player)) {
         deathAudio.play()
         console.log("crashed and died")
+        setParticleObjects(prev => [...prev, { ...player, id: 'player' }])
         setPlayer({ ...playerTemplate, isAlive: false })
         playerLives.current--
-        if (playerLives.current) {
+        if (playerLives.current >= 0) {
           setTimeout(() => {
             console.log("respawn")
             setPlayer(playerTemplate)
@@ -85,7 +86,8 @@ function App() {
 
           if (gameobject.health <= 0) {
             if (gameobject.type === 'AsteroidMedium') {
-              addGameObject(player, gameobjects.current, AsteroidsSmall, 3, gameobject.x, gameobject.y)
+              Math.random()
+              addGameObject(player, gameobjects.current, AsteroidsSmall, randomInteger(3, 5), gameobject.x, gameobject.y)
               setScore(prev => prev + 150)
             } else {
               setScore(prev => prev + 50)
@@ -95,7 +97,7 @@ function App() {
             asteroidExplode0Audio.currentTime = 0
             asteroidExplode0Audio.play()
 
-            setParticleObjects(prev => [...prev, { id: gameobject.id, x: gameobject.x, y: gameobject.y, angle: gameobject.angle }])
+            setParticleObjects(prev => [...prev, { ...gameobject }])
             gameobjects.current = gameobjects.current.filter(item => item.id !== gameobject.id)
 
             //Starts next stage
@@ -222,14 +224,14 @@ function App() {
 
   return (
     <div className="App" onKeyDown={handleKeyDown} onKeyUp={handleKeyUp} tabIndex="0">
-      <div style={{ width: '30px', height: '30px', position: 'fixed', bottom: '0', right: '0' }} onClick={() => setShowDevTools(!showDevTools)}></div>
+      {/* <div style={{ width: '30px', height: '30px', position: 'fixed', bottom: '0', right: '0' }} onClick={() => setShowDevTools(!showDevTools)}></div> */}
       <div className="gameScreen" style={{ width: screenWidth, height: screenHeight }}>
         {titleScreen && <TitleScreen startGame={startGame} highscore={highscore} />}
         {!titleScreen &&
           <div className="ingame">
             <div className="lives">
               <p>Lives:</p>
-              {[...Array(playerLives.current)].map((item, i) => (<img src={PlayerSprite} key={i} alt="A life" />))}
+              {playerLives.current > 0 && [...Array(playerLives.current)].map((item, i) => (<img src={PlayerSprite} key={i} alt="A life" />))}
             </div>
 
             <div className="score">
@@ -238,12 +240,8 @@ function App() {
 
             {particleObjects.map(object => <ParticleEmitter key={object.id} data={object} setParticleObjects={setParticleObjects} />)}
 
-            {!playerLives.current &&
+            {playerLives.current < 0 &&
               <EndScreen highscore={highscore} score={score} startGame={startGame} postHighscore={postHighscore} deleteHighscore={deleteHighscore} />
-              // <div className="gameOver" onClick={startGame}>
-              //   <p className='gameOverText'>Game Over</p>
-              //   <p>- Click to Restart -</p>
-              // </div>
             }
 
             {playerBullets.map((item, i) => (
