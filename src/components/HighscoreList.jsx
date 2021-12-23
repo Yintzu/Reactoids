@@ -14,7 +14,7 @@ const HighscoreList = ({ highscore, startGame, postedHighscoreId }) => {
           {highscore.map((item, i) => (<p className={`highscoreItem ${item.id === postedHighscoreId && 'flashingYellow'}`} style={{ '--DELAY': `${i / 10}s` }} key={item.id}>{item.name}<span>{fillDots(item)}</span>{item.score}</p>))}
         </div>
       }
-      <p className='restartText'>- Click to restart -</p>
+      <p className='restartText'>- Click to start -</p>
     </div>
   )
 }

@@ -30,15 +30,12 @@ const EndScreen = ({ startGame, highscore, score, postHighscore, deleteHighscore
 
   const handleSubmit = async (e) => {
     e.stopPropagation()
+    if (highscore.length >= 10) await deleteHighscore(highscore[highscore.length - 1].id)
     const postId = await postHighscore({ name: nameInput, score: score })
     console.log(`postId from end screen`, postId)
     setPostedHighscoreId(postId)
     setState(1)
   }
-
-  // const fillDots = (item) => {
-  //   return '.'.repeat(25 - (item.name.length + String(item.score).length))
-  // }
 
   const fillRefs = (el) => {
     if (el && !inputRefs.current.includes(el)) inputRefs.current.push(el)
@@ -58,15 +55,6 @@ const EndScreen = ({ startGame, highscore, score, postHighscore, deleteHighscore
       }
       {state === 1 &&
         <HighscoreList highscore={highscore} startGame={startGame} postedHighscoreId={postedHighscoreId} />
-        // <div className='highscore' onClick={startGame}>
-        //   <p className='textLarge'>Highscore</p>
-        //   {highscore &&
-        //     <div className='highscoreList'>
-        //       {highscore.map((item, i) => (<p className={`highscoreItem ${item.id === postedHighscoreId && 'flashingYellow'}`} style={{ '--DELAY': `${i / 10}s` }} key={item.id}>{item.name}<span>{fillDots(item)}</span>{item.score}</p>))}
-        //     </div>
-        //   }
-        //   <p className='restartText'>- Click to restart -</p>
-        // </div>
       }
       {state === 2 &&
         <div className='nameInputWrapper' onClick={handleInputClick}>

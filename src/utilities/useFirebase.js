@@ -36,14 +36,14 @@ const useFirebase = () => {
 
   const deleteHighscore = async (id) => {
     const deleteRef = doc(db, 'highscore', id)
-    await deleteDoc(deleteRef)
+    return await deleteDoc(deleteRef)
   }
 
   useEffect(() => {
     const unsub = onSnapshot(queryRef, (snapshot) => {
       const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
       console.log(`data from DB: `, data)
-      setHighscore(data.slice(0,9))
+      setHighscore(data.slice(0, 10))
     })
 
     return unsub
