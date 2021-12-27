@@ -32,12 +32,23 @@
   }
 }
 
+@keyframes floatUpAndDown {
+  0% {
+    transform: translateY(-2px);
+  }
+  100% {
+    transform: translateY(2px);
+  }
+}
+
 :root {
   --TUTORIAL_KEY_HEIGHT: 44px;
   --FADE_IN: fadeIn 0.8s ease-in-out forwards;
+  --FADE_OUT: fadeIn 3s ease-in-out reverse both;
   --FLASHING: fadeIn 0.4s infinite ease-in-out alternate;
   --FLASHING_REVERSE: fadeIn 0.4s infinite ease-in-out alternate-reverse;
   --FLASHING_YELLOW: flashYellow 0.3s ease-in-out infinite alternate;
+  --FLOAT_UP_AND_DOWN: floatUpAndDown 1s ease-in-out infinite alternate;
   --TEXT_LARGE: 3rem;
   --TEXT_MEDIUM: 2rem;
   --MT_4: 4rem auto 0 auto;
@@ -62,6 +73,14 @@ img {
 
 .mt-4 {
   margin: var(--MT_4);
+}
+
+.floatUpAndDown {
+  animation: var(--FLOAT_UP_AND_DOWN);
+}
+
+.fadeOut{
+  animation: var(--FADE_OUT);
 }
 
 .App {

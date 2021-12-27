@@ -13,7 +13,6 @@ const ParticleEmitter = ({ data, setParticleObjects }) => {
     top: `${data.y - canvasHeight / 2 + data.height / 2}px`,
     width: `${canvasWidth}px`,
     height: `${canvasHeight}px`,
-    // transform: `rotate(${data.angle}deg)`,
   }
 
   useEffect(() => {

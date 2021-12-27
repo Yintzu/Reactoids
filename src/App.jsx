@@ -11,7 +11,7 @@ import useUtilities from './utilities/useUtilities.js'
 import ParticleEmitter from './components/ParticleEmitter'
 import useFirebase from './utilities/useFirebase'
 import EndScreen from './components/EndScreen'
-import Upgrade from './components/gameobjects/Upgrade'
+import Powerup from './components/gameobjects/Powerup'
 
 function App() {
   //Settings
@@ -98,7 +98,7 @@ function App() {
               setScore(prev => prev + 50)
             }
 
-            upgradeObjects.current.push({ x: gameobject.x, y: gameobject.y, id: idGen(), width: 27, height: 14 })
+            upgradeObjects.current.push({ x: gameobject.x, y: gameobject.y, id: idGen(), width: 25, height: 12 })
 
             asteroidExplode0Audio.pause()
             asteroidExplode0Audio.currentTime = 0
@@ -261,6 +261,10 @@ function App() {
               <EndScreen highscore={highscore} score={score} startGame={startGame} postHighscore={postHighscore} deleteHighscore={deleteHighscore} />
             }
 
+            {upgradeObjects.current.map((item, i) => (
+              <Powerup data={item} upgradeObjects={upgradeObjects} key={item.id} />
+            ))}
+
             {playerBullets.map((item, i) => (
               <PlayerBullet data={item} setPlayerBullets={setPlayerBullets} key={i} />
             ))}
@@ -269,10 +273,6 @@ function App() {
 
             {asteroidObjects.current.map((item, i) => (
               <Asteroid data={item} key={i} />
-            ))}
-
-            {upgradeObjects.current.map((item, i) => (
-              <Upgrade data={item} upgradeObjects={upgradeObjects} key={i} />
             ))}
           </div>
         }

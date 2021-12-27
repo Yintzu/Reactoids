@@ -122,3 +122,29 @@ export const optionsPlayer = {
     },
   },
 }
+
+export const powerupOptions = {
+  fullScreen: {
+    enable: false
+  },
+  fpsLimit: 144,
+  particles: {
+    move: {
+      enable: true,
+      outMode: "bounce",
+      speed: 1,
+    },
+    number: {
+      value: 8
+    },
+    shape: {
+      type: "edge"
+    },
+    size: {
+      value: 1
+    },
+    life: {
+      count: 1
+    }
+  }
+}
