@@ -11,6 +11,7 @@ import useUtilities from './utilities/useUtilities.js'
 import ParticleEmitter from './components/ParticleEmitter'
 import useFirebase from './utilities/useFirebase'
 import EndScreen from './components/EndScreen'
+import Upgrade from './components/gameobjects/Upgrade'
 
 function App() {
   //Settings
@@ -32,6 +33,9 @@ function App() {
     yVelocity: 0,
     isAlive: true,
     invulnerable: true,
+    upgrades: {
+      spread: false
+    }
   }
 
   const [player, setPlayer] = useState(playerTemplate)
@@ -44,19 +48,20 @@ function App() {
   const playerLives = useRef(3)
   const gameLoop = useRef(false)
   const update = useRef()
-  const gameobjects = useRef([])
+  const asteroidObjects = useRef([])
+  const upgradeObjects = useRef([])
   const deltaTime = useRef(null)
   const oldTimestamp = useRef(null)
   const fps = useRef(null)
 
   const { deathAudio, asteroidExplode0Audio } = useAudioContext()
   const { playerBullets, setPlayerBullets, createBullet } = usePlayerBullets(player)
-  const { degToRad, randomInteger, AsteroidsSmall, /* AsteroidsMedium, */ addGameObject, checkOverlap, euclideanTorus } = useUtilities(screenWidth, screenHeight)
+  const { degToRad, idGen, randomInteger, AsteroidsSmall, /* AsteroidsMedium, */ addAsteroidObject, checkOverlap, euclideanTorus } = useUtilities(screenWidth, screenHeight)
   const { nextStageCheck, currentStage } = useStageHandler(screenWidth, screenHeight)
   const { highscore, postHighscore, deleteHighscore } = useFirebase()
 
   const playerCollisionCheck = () => {
-    gameobjects.current.forEach(object => {
+    asteroidObjects.current.forEach(object => {
       if (player.isAlive && checkOverlap(object, player)) {
         deathAudio.play()
         console.log("crashed and died")
@@ -79,7 +84,7 @@ function App() {
 
   const playerBulletsCollisionCheck = () => {
     playerBullets.forEach((bullet) => {
-      gameobjects.current.forEach((gameobject) => {
+      asteroidObjects.current.forEach((gameobject) => {
         if (checkOverlap(bullet, gameobject)) {
           setPlayerBullets(prev => prev.filter(item => item.id !== bullet.id))
           gameobject.health = gameobject.health - 1
@@ -87,22 +92,24 @@ function App() {
           if (gameobject.health <= 0) {
             if (gameobject.type === 'AsteroidMedium') {
               Math.random()
-              addGameObject(player, gameobjects.current, AsteroidsSmall, randomInteger(3, 5), gameobject.x, gameobject.y)
+              addAsteroidObject(player, asteroidObjects.current, AsteroidsSmall, randomInteger(3, 5), gameobject.x, gameobject.y)
               setScore(prev => prev + 150)
             } else {
               setScore(prev => prev + 50)
             }
+
+            upgradeObjects.current.push({ x: gameobject.x, y: gameobject.y, id: idGen(), width: 27, height: 14 })
 
             asteroidExplode0Audio.pause()
             asteroidExplode0Audio.currentTime = 0
             asteroidExplode0Audio.play()
 
             setParticleObjects(prev => [...prev, { ...gameobject }])
-            gameobjects.current = gameobjects.current.filter(item => item.id !== gameobject.id)
+            asteroidObjects.current = asteroidObjects.current.filter(item => item.id !== gameobject.id)
 
             //Starts next stage
-            if (gameobjects.current.length <= 0) setTimeout(() => {
-              nextStageCheck(player, gameobjects.current)
+            if (asteroidObjects.current.length <= 0) setTimeout(() => {
+              nextStageCheck(player, asteroidObjects.current)
             }, 2000)
 
           } else {
@@ -113,6 +120,15 @@ function App() {
           }
         }
       })
+    })
+  }
+
+  const upgradesCollisionCheck = () => {
+    upgradeObjects.current.forEach((object) => {
+      if (player.isAlive && checkOverlap(object, player)) {
+        setPlayer(prev => ({ ...prev, upgrades: { ...prev, spread: true } }))
+        upgradeObjects.current = upgradeObjects.current.filter(item => item.id !== object.id)
+      }
     })
   }
 
@@ -160,14 +176,14 @@ function App() {
     setScore(0)
     setPlayer({ ...playerTemplate, invulnerable: false })
     setTitleScreen(false)
-    gameobjects.current = []
+    asteroidObjects.current = []
     currentStage.current = 0
     if (!gameLoop.current) {
       gameLoop.current = true
       requestAnimationFrame(update.current)
     }
     setTimeout(() => {
-      nextStageCheck(player, gameobjects.current)
+      nextStageCheck(player, asteroidObjects.current)
     }, 1000)
   }
 
@@ -188,7 +204,7 @@ function App() {
     setPlayerBullets(prev => prev.map(bullet => {
       return { ...bullet, x: bullet.x + bullet.xVelocity * deltaTime.current, y: bullet.y + bullet.yVelocity * deltaTime.current }
     }))
-    gameobjects.current.forEach(item => {
+    asteroidObjects.current.forEach(item => {
       item.x = item.x + item.xVelocity * deltaTime.current
       item.y = item.y + item.yVelocity * deltaTime.current
       item.angle = item.angle + item.rotationSpeed * deltaTime.current
@@ -196,11 +212,12 @@ function App() {
 
     euclideanTorus(player, setPlayer)
     euclideanTorus(playerBullets, setPlayerBullets)
-    euclideanTorus(gameobjects.current)
+    euclideanTorus(asteroidObjects.current)
 
     //Collision checks
     if (!player.invulnerable) playerCollisionCheck()
     playerBulletsCollisionCheck()
+    upgradesCollisionCheck()
 
     //Quit check
     if (!gameLoop.current) return console.log("quit the loop")
@@ -250,14 +267,18 @@ function App() {
 
             <img src={PlayerSprite} className={`player ${!player.isAlive && 'hide'} ${player.invulnerable && 'flashing'}`} style={playerStyle} alt="Player ship controlled by you." />
 
-            {gameobjects.current.map((item, i) => (
+            {asteroidObjects.current.map((item, i) => (
               <Asteroid data={item} key={i} />
+            ))}
+
+            {upgradeObjects.current.map((item, i) => (
+              <Upgrade data={item} upgradeObjects={upgradeObjects} key={i} />
             ))}
           </div>
         }
       </div>
       {showDevTools &&
-        <DevTools player={player} fps={fps} gameobjects={gameobjects} gameLoop={gameLoop} handleGameLoopToggle={handleGameLoopToggle} addGameObject={addGameObject} />
+        <DevTools player={player} fps={fps} asteroidObjects={asteroidObjects} gameLoop={gameLoop} handleGameLoopToggle={handleGameLoopToggle} addAsteroidObject={addAsteroidObject} />
       }
     </div >
   )

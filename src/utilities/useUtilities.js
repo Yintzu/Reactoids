@@ -102,7 +102,7 @@ const useUtilities = (screenWidth, screenHeight) => {
     if (AsteroidMediumSprites.includes(objArray[0].path)) return { type: 'AsteroidMedium', health: 3, hitFlash: false }
   }
 
-  const addGameObject = (player, gameObjects, objArray, amount = 1, x, y) => {
+  const addAsteroidObject = (player, gameObjects, objArray, amount = 1, x, y) => {
     for (let i = 0; i < amount; i++) {
       let tempX = randomCoordinate('x')
       let tempY = randomCoordinate('y')
@@ -128,7 +128,7 @@ const useUtilities = (screenWidth, screenHeight) => {
     degToRad,
     radToDeg,
     randomInteger,
-    addGameObject,
+    addAsteroidObject,
     idGen,
     checkOverlap,
     euclideanTorus,

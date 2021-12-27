@@ -8,11 +8,11 @@ const usePlayerBullets = (player) => {
   const { shootBulletAudio } = useAudioContext()
 
   const speed = 500
-  const cooldownTime = 200
+  const cooldownTime = player.upgrades.spread ? 500 : 200
   const width = 5
   const height = 5
 
-  const bulletTemplate = {
+  const bulletTemplate = () => ({
     id: idGen(),
     angle: player.angle,
     width: width,
@@ -22,7 +22,7 @@ const usePlayerBullets = (player) => {
     xVelocity: 0 + speed * Math.sin(degToRad(player.angle)),
     yVelocity: 0 - speed * Math.cos(degToRad(player.angle)),
     path: Bullet
-  }
+  })
 
   const [weaponCooldown, setWeaponCooldown] = useState(false)
   const [playerBullets, setPlayerBullets] = useState([])
@@ -32,7 +32,12 @@ const usePlayerBullets = (player) => {
     shootBulletAudio.pause()
     shootBulletAudio.currentTime = 0
     shootBulletAudio.play()
-    setPlayerBullets(prev => [...prev, { ...bulletTemplate }])
+
+    if (player.upgrades.spread) setPlayerBullets(prev => [...prev, { ...bulletTemplate() },
+    { ...bulletTemplate(), xVelocity: 0 + speed * Math.sin(degToRad(player.angle + 5)), yVelocity: 0 - speed * Math.cos(degToRad(player.angle + 5)), },
+    { ...bulletTemplate(), xVelocity: 0 + speed * Math.sin(degToRad(player.angle - 5)), yVelocity: 0 - speed * Math.cos(degToRad(player.angle - 5)), }])
+    else setPlayerBullets(prev => [...prev, { ...bulletTemplate() }])
+
     setWeaponCooldown(true)
     setTimeout(() => {
       setWeaponCooldown(false)
