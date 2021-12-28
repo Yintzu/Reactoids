@@ -34,7 +34,8 @@ function App() {
     isAlive: true,
     invulnerable: true,
     upgrades: {
-      spread: false
+      spread: false,
+      mg: false,
     }
   }
 
@@ -102,7 +103,11 @@ function App() {
             }
 
             if (Math.round(Math.random() * 100) <= 5) {
-              upgradeObjects.current.push({ x: gameobject.x, y: gameobject.y, id: idGen(), width: 25, height: 12 })
+              if (Math.round(Math.random() * 100) <= 50) {
+                upgradeObjects.current.push({ x: gameobject.x, y: gameobject.y, id: idGen(), width: 25, height: 12, type: 'spread' })
+              } else {
+                upgradeObjects.current.push({ x: gameobject.x, y: gameobject.y, id: idGen(), width: 25, height: 12, type: '1k' })
+              }
             }
 
             asteroidExplode0Audio.pause()
@@ -131,7 +136,11 @@ function App() {
   const upgradesCollisionCheck = () => {
     upgradeObjects.current.forEach((object) => {
       if (player.isAlive && checkOverlap(object, player)) {
-        setPlayer(prev => ({ ...prev, upgrades: { ...prev, spread: true } }))
+        if (object.type === 'spread') {
+          setPlayer(prev => ({ ...prev, upgrades: { ...prev, spread: true } }))
+          setScore(prev => prev + 350)
+        }
+        if (object.type === '1k') setScore(prev => prev + 1000)
         upgradeObjects.current = upgradeObjects.current.filter(item => item.id !== object.id)
       }
     })

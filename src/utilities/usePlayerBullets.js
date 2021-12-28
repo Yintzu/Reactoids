@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Bullet from '../assets/Bullet.png'
+import BulletSpike from '../assets/BulletSpike.png'
 import { useAudioContext } from '../contexts/AudioProvider'
 import useUtilities from './useUtilities'
 

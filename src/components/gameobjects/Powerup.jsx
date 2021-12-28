@@ -1,18 +1,24 @@
 import React, { useEffect } from 'react'
 import Particles from 'react-tsparticles'
-import SprayUpgradeSprite from '../../assets/PowerupSpread.png'
+import PowerupSpriteSpread from '../../assets/PowerupSpread.png'
+import PowerupSprite1k from '../../assets/Powerup1k.png'
+import PowerupSpriteMG from '../../assets/PowerupMG.png'
 import { powerupOptions } from '../../utilities/particleOptions'
 
 const Upgrade = ({ data, upgradeObjects }) => {
 
   const lifetime = 10000
 
+  const spriteCheck = () => {
+    if (data.type === 'spread') return PowerupSpriteSpread
+    if (data.type === '1k') return PowerupSprite1k
+    if (data.type === 'MG') return PowerupSpriteMG
+  }
+
   useEffect(() => {
     setTimeout(() => {
       upgradeObjects.current = upgradeObjects.current.filter(item => item.id !== data.id)
     }, lifetime)
-
-
   }, []) //eslint-disable-line
 
   const powerupStyle = {
@@ -22,7 +28,7 @@ const Upgrade = ({ data, upgradeObjects }) => {
 
   return (
     <div className='powerupWrapper' style={{ position: 'absolute', ...powerupStyle, animation: 'var(--FADE_OUT)', animationDelay: '7s' }}>
-      <img src={SprayUpgradeSprite} className='floatUpAndDown' alt="A powerup!" />
+      <img src={spriteCheck()} className='floatUpAndDown' alt="A powerup!" />
       <Particles id={data.id} width={50} height={50} options={powerupOptions} style={{ position: 'absolute', top: '-10px', left: '-10px' }} />
     </div>
   )
