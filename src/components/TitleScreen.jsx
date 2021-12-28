@@ -18,7 +18,7 @@ const TitleScreen = ({ startGame, highscore }) => {
       clearTimeout(timeout)
     }
 
-  }, [state])
+  }, [state]) //eslint-disable-line
 
   return (
     <>

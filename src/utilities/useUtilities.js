@@ -11,6 +11,7 @@ import AsteroidMedium3 from "../assets/AsteroidsMedium/AsteroidMedium3.png"
 const importAll = (r) => r.keys().map(r)
 const AsteroidSmallSprites = importAll(require.context('../assets/AsteroidsSmall', false, /\.(png|jpe?g|svg)$/))
 const AsteroidMediumSprites = importAll(require.context('../assets/AsteroidsMedium', false, /\.(png|jpe?g|svg)$/))
+const AsteroidLargeSprites = importAll(require.context('../assets/AsteroidsLarge', false, /\.(png|jpe?g|svg)$/))
 
 const useUtilities = (screenWidth, screenHeight) => {
 
@@ -41,9 +42,8 @@ const useUtilities = (screenWidth, screenHeight) => {
     },
   ]
 
-  // console.log(`deltaTime.current`, deltaTime?.current)
-
   const AsteroidsMedium = [AsteroidMedium0, AsteroidMedium1, AsteroidMedium2, AsteroidMedium3].map(item => ({ width: 64, height: 61, path: item }))
+  const AsteroidsLarge = AsteroidLargeSprites.map(item => ({ width: 128, height: 128, path: item }))
 
   const idGen = () => {
     return Date.now().toString(36) + Math.random().toString(36).substr(2);
@@ -100,6 +100,7 @@ const useUtilities = (screenWidth, screenHeight) => {
   const configueType = (objArray) => {
     if (AsteroidSmallSprites.includes(objArray[0].path)) return { type: 'AsteroidSmall', health: 1 }
     if (AsteroidMediumSprites.includes(objArray[0].path)) return { type: 'AsteroidMedium', health: 3, hitFlash: false }
+    if (AsteroidLargeSprites.includes(objArray[0].path)) return { type: 'AsteroidLarge', health: 12, hitFlash: false }
   }
 
   const addAsteroidObject = (player, gameObjects, objArray, amount = 1, x, y) => {
@@ -125,6 +126,7 @@ const useUtilities = (screenWidth, screenHeight) => {
   return {
     AsteroidsSmall,
     AsteroidsMedium,
+    AsteroidsLarge,
     degToRad,
     radToDeg,
     randomInteger,

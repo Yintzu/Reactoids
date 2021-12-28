@@ -56,7 +56,7 @@ function App() {
 
   const { deathAudio, asteroidExplode0Audio } = useAudioContext()
   const { playerBullets, setPlayerBullets, createBullet } = usePlayerBullets(player)
-  const { degToRad, idGen, randomInteger, AsteroidsSmall, /* AsteroidsMedium, */ addAsteroidObject, checkOverlap, euclideanTorus } = useUtilities(screenWidth, screenHeight)
+  const { degToRad, idGen, randomInteger, AsteroidsSmall, AsteroidsMedium, addAsteroidObject, checkOverlap, euclideanTorus } = useUtilities(screenWidth, screenHeight)
   const { nextStageCheck, currentStage } = useStageHandler(screenWidth, screenHeight)
   const { highscore, postHighscore, deleteHighscore } = useFirebase()
 
@@ -90,15 +90,20 @@ function App() {
           gameobject.health = gameobject.health - 1
 
           if (gameobject.health <= 0) {
-            if (gameobject.type === 'AsteroidMedium') {
-              Math.random()
+            if (gameobject.type === 'AsteroidLarge') {
+              addAsteroidObject(player, asteroidObjects.current, AsteroidsMedium, randomInteger(5, 7), gameobject.x, gameobject.y)
+              setScore(prev => prev + 500)
+            }
+            else if (gameobject.type === 'AsteroidMedium') {
               addAsteroidObject(player, asteroidObjects.current, AsteroidsSmall, randomInteger(3, 5), gameobject.x, gameobject.y)
               setScore(prev => prev + 150)
             } else {
               setScore(prev => prev + 50)
             }
 
-            upgradeObjects.current.push({ x: gameobject.x, y: gameobject.y, id: idGen(), width: 25, height: 12 })
+            if (Math.round(Math.random() * 100) <= 5) {
+              upgradeObjects.current.push({ x: gameobject.x, y: gameobject.y, id: idGen(), width: 25, height: 12 })
+            }
 
             asteroidExplode0Audio.pause()
             asteroidExplode0Audio.currentTime = 0
