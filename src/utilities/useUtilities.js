@@ -60,6 +60,12 @@ const useUtilities = (screenWidth, screenHeight) => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
+  const playAudio = (audio) => {
+    audio.pause()
+    audio.currentTime = 0
+    audio.play()
+  }
+
   const checkOverlap = (object, object2) => {
     if (object2.x >= (object.x + object.width) || object.x >= (object2.x + object2.width)) return false
     if ((object2.y + object2.height) <= object.y || (object.y + object.height) <= object2.y) return false
@@ -69,15 +75,15 @@ const useUtilities = (screenWidth, screenHeight) => {
   const euclideanTorus = (thingToAffect, setFunction) => {
     if (Array.isArray(thingToAffect)) {
       thingToAffect.forEach((object) => {
-        if (object.x < 0) !setFunction ? object.x = object.x + screenWidth : setFunction(prev => [...prev.filter(item => item.id !== object.id), { ...object, x: screenWidth }])
-        if (object.x > screenWidth) !setFunction ? object.x = object.x - screenWidth : setFunction(prev => [...prev.filter(item => item.id !== object.id), { ...object, x: 0 }])
-        if (object.y < 0) object.y = !setFunction ? object.y + screenHeight : setFunction(prev => [...prev.filter(item => item.id !== object.id), { ...object, y: screenHeight }])
-        if (object.y > screenHeight) !setFunction ? object.y = object.y - screenHeight : setFunction(prev => [...prev.filter(item => item.id !== object.id), { ...object, y: 0 }])
+        if (object.x + object.width < 0) !setFunction ? object.x = screenWidth : setFunction(prev => [...prev.filter(item => item.id !== object.id), { ...object, x: screenWidth }])
+        if (object.x > screenWidth) !setFunction ? object.x = 0 - object.width : setFunction(prev => [...prev.filter(item => item.id !== object.id), { ...object, x: 0 - object.width }])
+        if (object.y + object.height < 0) !setFunction ? object.y = screenHeight : setFunction(prev => [...prev.filter(item => item.id !== object.id), { ...object, y: screenHeight }])
+        if (object.y > screenHeight) !setFunction ? object.y = 0 - object.height : setFunction(prev => [...prev.filter(item => item.id !== object.id), { ...object, y: 0 - object.height }])
       })
     } else if (!Array.isArray(thingToAffect)) {
-      if (thingToAffect.x < 0) setFunction(prev => ({ ...prev, x: prev.x + screenWidth }))
+      if (thingToAffect.x + thingToAffect.width < 0) setFunction(prev => ({ ...prev, x: prev.x + screenWidth }))
       if (thingToAffect.x > screenWidth) setFunction(prev => ({ ...prev, x: prev.x - screenWidth }))
-      if (thingToAffect.y < 0) setFunction(prev => ({ ...prev, y: prev.y + screenHeight }))
+      if (thingToAffect.y + thingToAffect.height < 0) setFunction(prev => ({ ...prev, y: prev.y + screenHeight }))
       if (thingToAffect.y > screenHeight) setFunction(prev => ({ ...prev, y: prev.y - screenHeight }))
     }
   }
@@ -132,6 +138,7 @@ const useUtilities = (screenWidth, screenHeight) => {
     randomInteger,
     addAsteroidObject,
     idGen,
+    playAudio,
     checkOverlap,
     euclideanTorus,
   }

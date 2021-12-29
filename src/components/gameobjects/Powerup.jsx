@@ -12,7 +12,7 @@ const Upgrade = ({ data, upgradeObjects }) => {
   const spriteCheck = () => {
     if (data.type === 'spread') return PowerupSpriteSpread
     if (data.type === '1k') return PowerupSprite1k
-    if (data.type === 'MG') return PowerupSpriteMG
+    if (data.type === 'mg') return PowerupSpriteMG
   }
 
   useEffect(() => {

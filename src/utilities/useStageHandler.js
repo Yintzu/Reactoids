@@ -8,9 +8,9 @@ const useStageHandler = (screenWidth, screenHeight) => {
   const nextStageCheck = (player, gameObjects) => {
     if (gameObjects.length > 0) return
 
-    addAsteroidObject(player, gameObjects, AsteroidsSmall, 5 + currentStage.current)
-    addAsteroidObject(player, gameObjects, AsteroidsMedium, currentStage.current)
-    addAsteroidObject(player, gameObjects, AsteroidsLarge, currentStage.current)
+    addAsteroidObject(player, gameObjects, AsteroidsSmall, 4 + currentStage.current)
+    addAsteroidObject(player, gameObjects, AsteroidsMedium, 1 + currentStage.current)
+    addAsteroidObject(player, gameObjects, AsteroidsLarge, Math.floor(currentStage.current / 2))
     currentStage.current++
   }
 

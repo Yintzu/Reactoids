@@ -1,15 +1,16 @@
 import { useState } from 'react'
 import Bullet from '../assets/Bullet.png'
 import BulletSpike from '../assets/BulletSpike.png'
+import BulletSpread from '../assets/BulletSpread.png'
 import { useAudioContext } from '../contexts/AudioProvider'
 import useUtilities from './useUtilities'
 
 const usePlayerBullets = (player) => {
-  const { degToRad, idGen } = useUtilities()
-  const { shootBulletAudio } = useAudioContext()
+  const { degToRad, idGen, playAudio } = useUtilities()
+  const { shootBulletAudio, shootSpikeAudio } = useAudioContext()
 
   const speed = 500
-  const cooldownTime = player.upgrades.spread ? 500 : 200
+  const cooldownTime = player.upgrades.spread ? 500 : player.upgrades.mg ? 100 : 250
   const width = 5
   const height = 5
 
@@ -22,7 +23,7 @@ const usePlayerBullets = (player) => {
     y: player.y + player.height / 2 - height / 2,
     xVelocity: 0 + speed * Math.sin(degToRad(player.angle)),
     yVelocity: 0 - speed * Math.cos(degToRad(player.angle)),
-    path: Bullet
+    path: player.upgrades.spread ? BulletSpread : player.upgrades.mg ? BulletSpike : Bullet
   })
 
   const [weaponCooldown, setWeaponCooldown] = useState(false)
@@ -30,9 +31,8 @@ const usePlayerBullets = (player) => {
 
   const createBullet = () => {
     if (weaponCooldown) return
-    shootBulletAudio.pause()
-    shootBulletAudio.currentTime = 0
-    shootBulletAudio.play()
+    if (player.upgrades.mg) playAudio(shootSpikeAudio)
+    else playAudio(shootBulletAudio)
 
     if (player.upgrades.spread) setPlayerBullets(prev => [...prev, { ...bulletTemplate() },
     { ...bulletTemplate(), xVelocity: 0 + speed * Math.sin(degToRad(player.angle + 5)), yVelocity: 0 - speed * Math.cos(degToRad(player.angle + 5)), },

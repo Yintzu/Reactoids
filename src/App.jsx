@@ -57,7 +57,7 @@ function App() {
 
   const { deathAudio, asteroidExplode0Audio } = useAudioContext()
   const { playerBullets, setPlayerBullets, createBullet } = usePlayerBullets(player)
-  const { degToRad, idGen, randomInteger, AsteroidsSmall, AsteroidsMedium, addAsteroidObject, checkOverlap, euclideanTorus } = useUtilities(screenWidth, screenHeight)
+  const { degToRad, idGen, playAudio, randomInteger, AsteroidsSmall, AsteroidsMedium, addAsteroidObject, checkOverlap, euclideanTorus } = useUtilities(screenWidth, screenHeight)
   const { nextStageCheck, currentStage } = useStageHandler(screenWidth, screenHeight)
   const { highscore, postHighscore, deleteHighscore } = useFirebase()
 
@@ -92,27 +92,28 @@ function App() {
 
           if (gameobject.health <= 0) {
             if (gameobject.type === 'AsteroidLarge') {
-              addAsteroidObject(player, asteroidObjects.current, AsteroidsMedium, randomInteger(5, 7), gameobject.x, gameobject.y)
+              addAsteroidObject(player, asteroidObjects.current, AsteroidsMedium, randomInteger(4, 5), gameobject.x, gameobject.y)
               setScore(prev => prev + 500)
             }
             else if (gameobject.type === 'AsteroidMedium') {
-              addAsteroidObject(player, asteroidObjects.current, AsteroidsSmall, randomInteger(3, 5), gameobject.x, gameobject.y)
+              addAsteroidObject(player, asteroidObjects.current, AsteroidsSmall, randomInteger(3, 4), gameobject.x, gameobject.y)
               setScore(prev => prev + 150)
             } else {
               setScore(prev => prev + 50)
             }
 
-            if (Math.round(Math.random() * 100) <= 5) {
-              if (Math.round(Math.random() * 100) <= 50) {
-                upgradeObjects.current.push({ x: gameobject.x, y: gameobject.y, id: idGen(), width: 25, height: 12, type: 'spread' })
-              } else {
-                upgradeObjects.current.push({ x: gameobject.x, y: gameobject.y, id: idGen(), width: 25, height: 12, type: '1k' })
+            const hasUpgrade = Object.values(player.upgrades).includes(true)
+            if (Math.round(Math.random() * 100) <= (hasUpgrade ? 6 : 15)) {
+              switch (randomInteger(0, (hasUpgrade ? 2 : 1))) {
+                case 0: upgradeObjects.current.push({ x: gameobject.x, y: gameobject.y, id: idGen(), width: 25, height: 12, type: 'spread' })
+                  break
+                case 1: upgradeObjects.current.push({ x: gameobject.x, y: gameobject.y, id: idGen(), width: 25, height: 12, type: 'mg' })
+                  break
+                case 2: upgradeObjects.current.push({ x: gameobject.x, y: gameobject.y, id: idGen(), width: 25, height: 12, type: '1k' })
               }
             }
 
-            asteroidExplode0Audio.pause()
-            asteroidExplode0Audio.currentTime = 0
-            asteroidExplode0Audio.play()
+            playAudio(asteroidExplode0Audio)
 
             setParticleObjects(prev => [...prev, { ...gameobject }])
             asteroidObjects.current = asteroidObjects.current.filter(item => item.id !== gameobject.id)
@@ -137,10 +138,13 @@ function App() {
     upgradeObjects.current.forEach((object) => {
       if (player.isAlive && checkOverlap(object, player)) {
         if (object.type === 'spread') {
-          setPlayer(prev => ({ ...prev, upgrades: { ...prev, spread: true } }))
+          setPlayer(prev => ({ ...prev, upgrades: { ...prev.upgrades, mg: false, spread: true } }))
+          setScore(prev => prev + 350)
+        } else if (object.type === 'mg') {
+          setPlayer(prev => ({ ...prev, upgrades: { ...prev.upgrades, mg: true, spread: false } }))
           setScore(prev => prev + 350)
         }
-        if (object.type === '1k') setScore(prev => prev + 1000)
+        else if (object.type === '1k') setScore(prev => prev + 1000)
         upgradeObjects.current = upgradeObjects.current.filter(item => item.id !== object.id)
       }
     })
@@ -170,7 +174,7 @@ function App() {
       yVelocity: prev.yVelocity - thrustSpeed * Math.cos(degToRad(player.angle)),
     }))
     if (keysPressed.includes("a")) setPlayer(prev => {
-      if (prev.angle /* - rotationSpeed */ < 0) return { ...prev, angle: prev.angle - rotationSpeed * deltaTime.current + 360 }
+      if (prev.angle < 0) return { ...prev, angle: prev.angle - rotationSpeed * deltaTime.current + 360 }
       return { ...prev, angle: prev.angle - rotationSpeed * deltaTime.current }
     })
     if (keysPressed.includes("s")) setPlayer(prev => ({
@@ -179,7 +183,7 @@ function App() {
       yVelocity: prev.yVelocity + thrustSpeed * Math.cos(degToRad(player.angle)),
     }))
     if (keysPressed.includes("d")) setPlayer(prev => {
-      if (prev.angle /* + rotationSpeed */ > 360) return { ...prev, angle: prev.angle + rotationSpeed * deltaTime.current - 360 }
+      if (prev.angle > 360) return { ...prev, angle: prev.angle + rotationSpeed * deltaTime.current - 360 }
       return { ...prev, angle: prev.angle + rotationSpeed * deltaTime.current }
     })
     if (keysPressed.includes(" ")) createBullet()
