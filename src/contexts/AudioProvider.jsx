@@ -2,7 +2,9 @@ import React, { createContext, useContext, useState } from "react";
 import PlayerExplodePath from '../assets/sound/playerExplode.wav'
 import ShootBulletPath from '../assets/sound/shootBullet.wav'
 import ShootSpikePath from '../assets/sound/shootSpike.wav'
+import ShootLaserPath from '../assets/sound/shootLaser.wav'
 import AsteroidExplode0Path from '../assets/sound/asteroidExplode0.wav'
+import PowerupPickupPath from '../assets/sound/powerupPickup.wav'
 // import AsteroidExplode1Path from '../assets/sound/asteroidExplode1.wav'
 
 const AudioContext = createContext()
@@ -14,18 +16,23 @@ const AudioProvider = (props) => {
   const [deathAudio] = useState(new Audio(PlayerExplodePath))
   const [shootBulletAudio] = useState(new Audio(ShootBulletPath))
   const [shootSpikeAudio] = useState(new Audio(ShootSpikePath))
+  const [shootLaserAudio] = useState(new Audio(ShootLaserPath))
+  const [powerupPickupAudio] = useState(new Audio(PowerupPickupPath))
   const [asteroidExplode0Audio] = useState(new Audio(AsteroidExplode0Path))
 
   deathAudio.volume = volume
+  asteroidExplode0Audio.volume = volume
+  powerupPickupAudio.volume = volume
   shootBulletAudio.volume = volume / 2
   shootSpikeAudio.volume = volume / 2.5
-  asteroidExplode0Audio.volume = volume
 
   const values = {
     deathAudio,
     shootBulletAudio,
     shootSpikeAudio,
-    asteroidExplode0Audio
+    shootLaserAudio,
+    powerupPickupAudio,
+    asteroidExplode0Audio,
   }
 
   return (

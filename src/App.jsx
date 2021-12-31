@@ -23,6 +23,12 @@ function App() {
   const respawnTime = 1500
   const invulnerabilityTime = 3000
 
+  const upgradeTemplate = {
+    spread: false,
+    mg: false,
+    laser: false,
+  }
+
   const playerTemplate = {
     angle: 0,
     x: screenWidth / 2,
@@ -33,10 +39,7 @@ function App() {
     yVelocity: 0,
     isAlive: true,
     invulnerable: true,
-    upgrades: {
-      spread: false,
-      mg: false,
-    }
+    upgrades: { ...upgradeTemplate }
   }
 
   const [player, setPlayer] = useState(playerTemplate)
@@ -55,7 +58,7 @@ function App() {
   const oldTimestamp = useRef(null)
   const fps = useRef(null)
 
-  const { deathAudio, asteroidExplode0Audio } = useAudioContext()
+  const { deathAudio, powerupPickupAudio, asteroidExplode0Audio } = useAudioContext()
   const { playerBullets, setPlayerBullets, createBullet } = usePlayerBullets(player)
   const { degToRad, idGen, playAudio, randomInteger, AsteroidsSmall, AsteroidsMedium, addAsteroidObject, checkOverlap, euclideanTorus } = useUtilities(screenWidth, screenHeight)
   const { nextStageCheck, currentStage } = useStageHandler(screenWidth, screenHeight)
@@ -104,12 +107,14 @@ function App() {
 
             const hasUpgrade = Object.values(player.upgrades).includes(true)
             if (Math.round(Math.random() * 100) <= (hasUpgrade ? 6 : 15)) {
-              switch (randomInteger(0, (hasUpgrade ? 2 : 1))) {
+              switch (randomInteger(0, (hasUpgrade ? 3 : 2))) {
                 case 0: upgradeObjects.current.push({ x: gameobject.x, y: gameobject.y, id: idGen(), width: 25, height: 12, type: 'spread' })
                   break
                 case 1: upgradeObjects.current.push({ x: gameobject.x, y: gameobject.y, id: idGen(), width: 25, height: 12, type: 'mg' })
                   break
-                case 2: upgradeObjects.current.push({ x: gameobject.x, y: gameobject.y, id: idGen(), width: 25, height: 12, type: '1k' })
+                case 2: upgradeObjects.current.push({ x: gameobject.x, y: gameobject.y, id: idGen(), width: 25, height: 12, type: 'laser' })
+                  break
+                case 3: upgradeObjects.current.push({ x: gameobject.x, y: gameobject.y, id: idGen(), width: 25, height: 12, type: '1k' })
               }
             }
 
@@ -137,14 +142,18 @@ function App() {
   const upgradesCollisionCheck = () => {
     upgradeObjects.current.forEach((object) => {
       if (player.isAlive && checkOverlap(object, player)) {
+        playAudio(powerupPickupAudio)
         if (object.type === 'spread') {
-          setPlayer(prev => ({ ...prev, upgrades: { ...prev.upgrades, mg: false, spread: true } }))
+          setPlayer(prev => ({ ...prev, upgrades: { ...upgradeTemplate, spread: true } }))
           setScore(prev => prev + 350)
         } else if (object.type === 'mg') {
-          setPlayer(prev => ({ ...prev, upgrades: { ...prev.upgrades, mg: true, spread: false } }))
+          setPlayer(prev => ({ ...prev, upgrades: { ...upgradeTemplate, mg: true } }))
+          setScore(prev => prev + 350)
+        } else if (object.type === 'laser') {
+          setPlayer(prev => ({ ...prev, upgrades: { ...upgradeTemplate, laser: true } }))
           setScore(prev => prev + 350)
         }
-        else if (object.type === '1k') setScore(prev => prev + 1000)
+        else /* if (object.type === '1k') */ setScore(prev => prev + 1000)
         upgradeObjects.current = upgradeObjects.current.filter(item => item.id !== object.id)
       }
     })
@@ -259,7 +268,7 @@ function App() {
 
   return (
     <div className="App" onKeyDown={handleKeyDown} onKeyUp={handleKeyUp} tabIndex="0">
-      {/* <div style={{ width: '30px', height: '30px', position: 'fixed', bottom: '0', right: '0' }} onClick={() => setShowDevTools(!showDevTools)}></div> */}
+      <div style={{ width: '30px', height: '30px', position: 'fixed', bottom: '0', right: '0' }} onClick={() => setShowDevTools(!showDevTools)}></div>
       <div className="gameScreen" style={{ width: screenWidth, height: screenHeight }}>
         {titleScreen && <TitleScreen startGame={startGame} highscore={highscore} />}
         {!titleScreen &&
@@ -296,7 +305,7 @@ function App() {
         }
       </div>
       {showDevTools &&
-        <DevTools player={player} fps={fps} asteroidObjects={asteroidObjects} gameLoop={gameLoop} handleGameLoopToggle={handleGameLoopToggle} addAsteroidObject={addAsteroidObject} />
+        <DevTools player={player} setPlayer={setPlayer} fps={fps} asteroidObjects={asteroidObjects} gameLoop={gameLoop} handleGameLoopToggle={handleGameLoopToggle} addAsteroidObject={addAsteroidObject} />
       }
     </div >
   )

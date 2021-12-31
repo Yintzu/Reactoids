@@ -1,8 +1,8 @@
 import React from 'react'
 import useUtilities from '../utilities/useUtilities'
 
-const DevTools = ({ player, fps, gameLoop, gameobjects, handleGameLoopToggle, addAsteroidObject }) => {
-  const { AsteroidsSmall, AsteroidsMedium } = useUtilities()
+const DevTools = ({ player, setPlayer, fps, gameLoop, asteroidObjects, handleGameLoopToggle, addAsteroidObject }) => {
+  const { AsteroidsSmall, AsteroidsMedium, AsteroidsLarge } = useUtilities()
 
   return (
     <div className="devTools">
@@ -11,17 +11,35 @@ const DevTools = ({ player, fps, gameLoop, gameobjects, handleGameLoopToggle, ad
       <section>
         <span>Small Asteroids</span>
         <div className="devBtnRow">
-          <button className="removeBtn" onClick={() => gameobjects.current.splice(-5, 5)}>-5</button>
-          <button className="removeBtn" onClick={() => gameobjects.current.pop()}>-</button>
-          <button className="addBtn" onClick={() => addAsteroidObject(player, gameobjects.current, AsteroidsSmall)}>+</button>
-          <button className="addBtn" onClick={() => addAsteroidObject(player, gameobjects.current, AsteroidsSmall, 5)}>+5</button>
+          <button className="addBtn" onClick={() => addAsteroidObject(player, asteroidObjects.current, AsteroidsSmall)}>+</button>
+          <button className="addBtn" onClick={() => addAsteroidObject(player, asteroidObjects.current, AsteroidsSmall, 5)}>+5</button>
         </div>
       </section>
       <section>
         <span>Medium Asteroids</span>
         <div className="devBtnRow">
-          <button className="removeBtn" onClick={() => gameobjects.current.pop()}>-</button>
-          <button className="addBtn" onClick={() => addAsteroidObject(player, gameobjects.current, AsteroidsMedium)}>+</button>
+          <button className="addBtn" onClick={() => addAsteroidObject(player, asteroidObjects.current, AsteroidsMedium)}>+</button>
+        </div>
+      </section>
+      <section>
+        <span>Large Asteroids</span>
+        <div className="devBtnRow">
+          <button className="addBtn" onClick={() => addAsteroidObject(player, asteroidObjects.current, AsteroidsLarge)}>+</button>
+        </div>
+      </section>
+      <section>
+        <span>Remove Asteroids</span>
+        <div className="devBtnRow">
+          <button className="removeBtn" onClick={() => asteroidObjects.current.pop()}>-</button>
+          <button className="removeBtn" onClick={() => asteroidObjects.current.splice(-5, 5)}>-5</button>
+        </div>
+      </section>
+      <section>
+        <span>Powerups</span>
+        <div className="devBtnRow">
+          <button className="removeBtn" onClick={() => setPlayer(prev => ({ ...prev, upgrades: { spread: true, mg: false, laser: false } }))}>Spread</button>
+          <button className="removeBtn" onClick={() => setPlayer(prev => ({ ...prev, upgrades: { spread: false, mg: true, laser: false } }))}>MG</button>
+          <button className="removeBtn" onClick={() => setPlayer(prev => ({ ...prev, upgrades: { spread: false, mg: false, laser: true } }))}>Laser</button>
         </div>
       </section>
     </div>

@@ -3,6 +3,7 @@ import Particles from 'react-tsparticles'
 import PowerupSpriteSpread from '../../assets/PowerupSpread.png'
 import PowerupSprite1k from '../../assets/Powerup1k.png'
 import PowerupSpriteMG from '../../assets/PowerupMG.png'
+import PowerupSpriteLaser from '../../assets/PowerupLaser.png'
 import { powerupOptions } from '../../utilities/particleOptions'
 
 const Upgrade = ({ data, upgradeObjects }) => {
@@ -13,6 +14,7 @@ const Upgrade = ({ data, upgradeObjects }) => {
     if (data.type === 'spread') return PowerupSpriteSpread
     if (data.type === '1k') return PowerupSprite1k
     if (data.type === 'mg') return PowerupSpriteMG
+    if (data.type === 'laser') return PowerupSpriteLaser
   }
 
   useEffect(() => {
