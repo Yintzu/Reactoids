@@ -46,7 +46,7 @@ const useUtilities = (screenWidth, screenHeight) => {
   const AsteroidsLarge = AsteroidLargeSprites.map(item => ({ width: 128, height: 128, path: item }))
 
   const idGen = () => {
-    return Date.now().toString(36) + Math.random().toString(36).substr(2);
+    return Date.now().toString(36) + Math.random().toString(36).substring(2);
   }
 
   const degToRad = (deg) => {

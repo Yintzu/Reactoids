@@ -44,6 +44,7 @@ function App() {
 
   const [player, setPlayer] = useState(playerTemplate)
   const [particleObjects, setParticleObjects] = useState([])
+  const [pickupScoreObjects, setPickupScoreObjects] = useState([])
   const [keysPressed, setKeysPressed] = useState([])
   const [score, setScore] = useState(0)
   const [titleScreen, setTitleScreen] = useState(true)
@@ -90,9 +91,11 @@ function App() {
     playerBullets.forEach((bullet) => {
       asteroidObjects.current.forEach((gameobject) => {
         if (checkOverlap(bullet, gameobject)) {
-          setPlayerBullets(prev => prev.filter(item => item.id !== bullet.id))
-          gameobject.health = gameobject.health - 1
-
+          if (bullet.type === 'laser' && gameobject.type === 'AsteroidLarge') {
+            gameobject.health = gameobject.health - 4
+          } else gameobject.health = gameobject.health - 1
+          if (bullet.type !== 'laser' || (gameobject.type === 'AsteroidLarge' && gameobject.health > 0)) setPlayerBullets(prev => prev.filter(item => item.id !== bullet.id))
+          console.log(gameobject.health)
           if (gameobject.health <= 0) {
             if (gameobject.type === 'AsteroidLarge') {
               addAsteroidObject(player, asteroidObjects.current, AsteroidsMedium, randomInteger(4, 5), gameobject.x, gameobject.y)
@@ -288,12 +291,12 @@ function App() {
               <EndScreen highscore={highscore} score={score} startGame={startGame} postHighscore={postHighscore} deleteHighscore={deleteHighscore} />
             }
 
-            {upgradeObjects.current.map((item, i) => (
+            {upgradeObjects.current.map((item) => (
               <Powerup data={item} upgradeObjects={upgradeObjects} key={item.id} />
             ))}
 
-            {playerBullets.map((item, i) => (
-              <PlayerBullet data={item} setPlayerBullets={setPlayerBullets} key={i} />
+            {playerBullets.map((item) => (
+              <PlayerBullet data={item} setPlayerBullets={setPlayerBullets} key={item.id} />
             ))}
 
             <img src={PlayerSprite} className={`player ${!player.isAlive && 'hide'} ${player.invulnerable && 'flashing'}`} style={playerStyle} alt="Player ship controlled by you." />

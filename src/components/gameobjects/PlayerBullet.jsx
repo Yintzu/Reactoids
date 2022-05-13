@@ -1,13 +1,11 @@
 import React, { useEffect } from 'react'
 
 const PlayerBullet = ({ data, setPlayerBullets }) => {
-
-  const lifetime = 1000
-
   const isLaser = data.type === 'laser'
 
+  const lifetime = isLaser ? 2000 : 1000
+
   useEffect(() => {
-    console.log(`data`, data)
     setTimeout(() => {
       setPlayerBullets(prev => {
         return prev.filter(item => item.id !== data.id)
@@ -20,7 +18,7 @@ const PlayerBullet = ({ data, setPlayerBullets }) => {
     top: `${data.y}px`,
     transform: `rotate(${data.angle}deg)`,
     transformOrigin: isLaser ? '50% 10% 0' : 'initial',
-    animation: isLaser ? 'laserGrow 0.2s forwards' : 'none'
+    animation: isLaser ? 'laserGrow 0.1s forwards' : 'none'
   }
 
   return (

@@ -6,7 +6,7 @@ import PowerupSpriteMG from '../../assets/PowerupMG.png'
 import PowerupSpriteLaser from '../../assets/PowerupLaser.png'
 import { powerupOptions } from '../../utilities/particleOptions'
 
-const Upgrade = ({ data, upgradeObjects }) => {
+const Powerup = ({ data, powerupObjects }) => {
 
   const lifetime = 10000
 
@@ -19,7 +19,7 @@ const Upgrade = ({ data, upgradeObjects }) => {
 
   useEffect(() => {
     setTimeout(() => {
-      upgradeObjects.current = upgradeObjects.current.filter(item => item.id !== data.id)
+      powerupObjects.current = powerupObjects.current.filter(item => item.id !== data.id)
     }, lifetime)
   }, []) //eslint-disable-line
 
@@ -36,4 +36,4 @@ const Upgrade = ({ data, upgradeObjects }) => {
   )
 }
 
-export default Upgrade
+export default Powerup

@@ -10,8 +10,8 @@ const usePlayerBullets = (player) => {
   const { degToRad, idGen, playAudio } = useUtilities()
   const { shootBulletAudio, shootSpikeAudio, shootLaserAudio } = useAudioContext()
 
-  const speed = 500
-  const cooldownTime = player.upgrades.spread ? 500 : player.upgrades.mg ? 100 : 250
+  const speed = player.upgrades.laser ? 1000 : 500
+  const cooldownTime = player.upgrades.spread ? 500 : player.upgrades.mg ? 100 : player.upgrades.laser ? 1000 : 250
   const width = 5
   const height = 5
 
