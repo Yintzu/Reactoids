@@ -2,7 +2,7 @@ import { useEffect } from "react"
 
 const PickupScore = ({ setPickupScoreObjects, data }) => {
 
-  const lifetime = 5000
+  const lifetime = 800
 
   const style = {
     position: 'absolute',
@@ -17,7 +17,9 @@ const PickupScore = ({ setPickupScoreObjects, data }) => {
   }, []) //eslint-disable-line
 
   return (
-    <p style={style}>{data.value}</p>
+    <div className="floatUp" style={style} >
+      <p className="pickupScoreFlash">{data.score}</p>
+    </div>
   )
 }
 

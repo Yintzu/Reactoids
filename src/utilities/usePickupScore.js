@@ -1,13 +1,12 @@
 import { useState } from "react"
-import useAsteroids from "./useAsteroids"
+import { idGen } from "./helpers"
 
 const usePickupScore = () => {
-  const { idGen } = useAsteroids()
   const [pickupScoreObjects, setPickupScoreObjects] = useState([])
 
   const pickupScoreTemplate = (powerupObj) => ({
     id: idGen(),
-    value: null,
+    score: powerupObj.score,
     x: powerupObj.x,
     y: powerupObj.y,
   })

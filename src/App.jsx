@@ -64,7 +64,7 @@ function App() {
   const { deathAudio, powerupPickupAudio, asteroidExplode0Audio } = useAudioContext()
   const { playerBullets, setPlayerBullets, createBullet } = usePlayerBullets(player)
   const { powerupObjects, spawnPowerupCheck } = usePowerups(player)
-  const { pickupScoreObjects, setPickupScoreObjects } = usePickupScore()
+  const { pickupScoreObjects, setPickupScoreObjects, createPickupScore } = usePickupScore()
   const { AsteroidsSmall, AsteroidsMedium, addAsteroidObject } = useAsteroids(screenWidth, screenHeight)
   const { nextStageCheck, currentStage, euclideanTorus } = useStageHandler(screenWidth, screenHeight)
   const { highscore, postHighscore, deleteHighscore } = useFirebase()
@@ -142,6 +142,7 @@ function App() {
           setPlayer(prev => ({ ...prev, powerup: { ...powerupsTemplate, [object.type]: true } }))
         }
         setScore(prev => prev + object.score)
+        createPickupScore(object)
         powerupObjects.current = powerupObjects.current.filter(item => item.id !== object.id)
       }
     })
@@ -279,7 +280,7 @@ function App() {
             }
 
             {powerupObjects.current.map((item) => (
-              <Powerup data={item} upgradeObjects={powerupObjects} key={item.id} />
+              <Powerup data={item} powerupObjects={powerupObjects} key={item.id} />
             ))}
 
             {playerBullets.map((item) => (
