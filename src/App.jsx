@@ -1,17 +1,21 @@
 import { useEffect, useRef, useState } from 'react'
-import PlayerSprite from './assets/Player.png'
+import { useAudioContext } from './contexts/AudioProvider'
+import { degToRad, randomInteger, playAudio, checkOverlap } from './utilities/helpers'
+import usePowerups from './utilities/usePowerups'
+import usePlayerBullets from './utilities/usePlayerBullets'
+import useStageHandler from './utilities/useStageHandler'
+import useAsteroids from './utilities/useAsteroids.js'
+import useFirebase from './utilities/useFirebase'
+import usePickupScore from './utilities/usePickupScore'
 import DevTools from './components/DevTools'
 import Asteroid from './components/gameobjects/Asteroid'
 import PlayerBullet from './components/gameobjects/PlayerBullet'
 import TitleScreen from './components/TitleScreen'
-import { useAudioContext } from './contexts/AudioProvider'
-import usePlayerBullets from './utilities/usePlayerBullets'
-import useStageHandler from './utilities/useStageHandler'
-import useUtilities from './utilities/useUtilities.js'
 import ParticleEmitter from './components/ParticleEmitter'
-import useFirebase from './utilities/useFirebase'
 import EndScreen from './components/EndScreen'
 import Powerup from './components/gameobjects/Powerup'
+import PickupScore from './components/PickupScore'
+import PlayerSprite from './assets/Player.png'
 
 function App() {
   //Settings
@@ -23,7 +27,7 @@ function App() {
   const respawnTime = 1500
   const invulnerabilityTime = 3000
 
-  const upgradeTemplate = {
+  const powerupsTemplate = {
     spread: false,
     mg: false,
     laser: false,
@@ -39,12 +43,11 @@ function App() {
     yVelocity: 0,
     isAlive: true,
     invulnerable: true,
-    upgrades: { ...upgradeTemplate }
+    powerup: { ...powerupsTemplate }
   }
 
   const [player, setPlayer] = useState(playerTemplate)
   const [particleObjects, setParticleObjects] = useState([])
-  const [pickupScoreObjects, setPickupScoreObjects] = useState([])
   const [keysPressed, setKeysPressed] = useState([])
   const [score, setScore] = useState(0)
   const [titleScreen, setTitleScreen] = useState(true)
@@ -54,15 +57,16 @@ function App() {
   const gameLoop = useRef(false)
   const update = useRef()
   const asteroidObjects = useRef([])
-  const upgradeObjects = useRef([])
   const deltaTime = useRef(null)
   const oldTimestamp = useRef(null)
   const fps = useRef(null)
 
   const { deathAudio, powerupPickupAudio, asteroidExplode0Audio } = useAudioContext()
   const { playerBullets, setPlayerBullets, createBullet } = usePlayerBullets(player)
-  const { degToRad, idGen, playAudio, randomInteger, AsteroidsSmall, AsteroidsMedium, addAsteroidObject, checkOverlap, euclideanTorus } = useUtilities(screenWidth, screenHeight)
-  const { nextStageCheck, currentStage } = useStageHandler(screenWidth, screenHeight)
+  const { powerupObjects, spawnPowerupCheck } = usePowerups(player)
+  const { pickupScoreObjects, setPickupScoreObjects } = usePickupScore()
+  const { AsteroidsSmall, AsteroidsMedium, addAsteroidObject } = useAsteroids(screenWidth, screenHeight)
+  const { nextStageCheck, currentStage, euclideanTorus } = useStageHandler(screenWidth, screenHeight)
   const { highscore, postHighscore, deleteHighscore } = useFirebase()
 
   const playerCollisionCheck = () => {
@@ -95,7 +99,6 @@ function App() {
             gameobject.health = gameobject.health - 4
           } else gameobject.health = gameobject.health - 1
           if (bullet.type !== 'laser' || (gameobject.type === 'AsteroidLarge' && gameobject.health > 0)) setPlayerBullets(prev => prev.filter(item => item.id !== bullet.id))
-          console.log(gameobject.health)
           if (gameobject.health <= 0) {
             if (gameobject.type === 'AsteroidLarge') {
               addAsteroidObject(player, asteroidObjects.current, AsteroidsMedium, randomInteger(4, 5), gameobject.x, gameobject.y)
@@ -108,18 +111,7 @@ function App() {
               setScore(prev => prev + 50)
             }
 
-            const hasUpgrade = Object.values(player.upgrades).includes(true)
-            if (Math.round(Math.random() * 100) <= (hasUpgrade ? 6 : 15)) {
-              switch (randomInteger(0, (hasUpgrade ? 3 : 2))) {
-                case 0: upgradeObjects.current.push({ x: gameobject.x, y: gameobject.y, id: idGen(), width: 25, height: 12, type: 'spread' })
-                  break
-                case 1: upgradeObjects.current.push({ x: gameobject.x, y: gameobject.y, id: idGen(), width: 25, height: 12, type: 'mg' })
-                  break
-                case 2: upgradeObjects.current.push({ x: gameobject.x, y: gameobject.y, id: idGen(), width: 25, height: 12, type: 'laser' })
-                  break
-                case 3: upgradeObjects.current.push({ x: gameobject.x, y: gameobject.y, id: idGen(), width: 25, height: 12, type: '1k' })
-              }
-            }
+            spawnPowerupCheck(gameobject)
 
             playAudio(asteroidExplode0Audio)
 
@@ -142,22 +134,15 @@ function App() {
     })
   }
 
-  const upgradesCollisionCheck = () => {
-    upgradeObjects.current.forEach((object) => {
+  const powerupCollisionCheck = () => {
+    powerupObjects.current.forEach((object) => {
       if (player.isAlive && checkOverlap(object, player)) {
         playAudio(powerupPickupAudio)
-        if (object.type === 'spread') {
-          setPlayer(prev => ({ ...prev, upgrades: { ...upgradeTemplate, spread: true } }))
-          setScore(prev => prev + 350)
-        } else if (object.type === 'mg') {
-          setPlayer(prev => ({ ...prev, upgrades: { ...upgradeTemplate, mg: true } }))
-          setScore(prev => prev + 350)
-        } else if (object.type === 'laser') {
-          setPlayer(prev => ({ ...prev, upgrades: { ...upgradeTemplate, laser: true } }))
-          setScore(prev => prev + 350)
+        if (object.type !== '1k') {
+          setPlayer(prev => ({ ...prev, powerup: { ...powerupsTemplate, [object.type]: true } }))
         }
-        else /* if (object.type === '1k') */ setScore(prev => prev + 1000)
-        upgradeObjects.current = upgradeObjects.current.filter(item => item.id !== object.id)
+        setScore(prev => prev + object.score)
+        powerupObjects.current = powerupObjects.current.filter(item => item.id !== object.id)
       }
     })
   }
@@ -247,7 +232,7 @@ function App() {
     //Collision checks
     if (!player.invulnerable) playerCollisionCheck()
     playerBulletsCollisionCheck()
-    upgradesCollisionCheck()
+    powerupCollisionCheck()
 
     //Quit check
     if (!gameLoop.current) return console.log("quit the loop")
@@ -287,12 +272,14 @@ function App() {
 
             {particleObjects.map(object => <ParticleEmitter key={object.id} data={object} setParticleObjects={setParticleObjects} />)}
 
+            {pickupScoreObjects.map(object => <PickupScore key={object.id} data={object} setPickupScoreObjects={setPickupScoreObjects} />)}
+
             {playerLives.current < 0 &&
               <EndScreen highscore={highscore} score={score} startGame={startGame} postHighscore={postHighscore} deleteHighscore={deleteHighscore} />
             }
 
-            {upgradeObjects.current.map((item) => (
-              <Powerup data={item} upgradeObjects={upgradeObjects} key={item.id} />
+            {powerupObjects.current.map((item) => (
+              <Powerup data={item} upgradeObjects={powerupObjects} key={item.id} />
             ))}
 
             {playerBullets.map((item) => (

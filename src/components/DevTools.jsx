@@ -1,8 +1,8 @@
 import React from 'react'
-import useUtilities from '../utilities/useUtilities'
+import useAsteroids from '../utilities/useAsteroids'
 
 const DevTools = ({ player, setPlayer, fps, gameLoop, asteroidObjects, handleGameLoopToggle, addAsteroidObject }) => {
-  const { AsteroidsSmall, AsteroidsMedium, AsteroidsLarge } = useUtilities()
+  const { AsteroidsSmall, AsteroidsMedium, AsteroidsLarge } = useAsteroids()
 
   return (
     <div className="devTools">

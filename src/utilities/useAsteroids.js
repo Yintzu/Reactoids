@@ -7,13 +7,14 @@ import AsteroidMedium0 from "../assets/AsteroidsMedium/AsteroidMedium0.png"
 import AsteroidMedium1 from "../assets/AsteroidsMedium/AsteroidMedium1.png"
 import AsteroidMedium2 from "../assets/AsteroidsMedium/AsteroidMedium2.png"
 import AsteroidMedium3 from "../assets/AsteroidsMedium/AsteroidMedium3.png"
+import { idGen } from "./helpers"
 
 const importAll = (r) => r.keys().map(r)
 const AsteroidSmallSprites = importAll(require.context('../assets/AsteroidsSmall', false, /\.(png|jpe?g|svg)$/))
 const AsteroidMediumSprites = importAll(require.context('../assets/AsteroidsMedium', false, /\.(png|jpe?g|svg)$/))
 const AsteroidLargeSprites = importAll(require.context('../assets/AsteroidsLarge', false, /\.(png|jpe?g|svg)$/))
 
-const useUtilities = (screenWidth, screenHeight) => {
+const useAsteroids = (screenWidth, screenHeight) => {
 
   const spawnSafety = 200
   const asteroidSpeed = 200
@@ -45,55 +46,12 @@ const useUtilities = (screenWidth, screenHeight) => {
   const AsteroidsMedium = [AsteroidMedium0, AsteroidMedium1, AsteroidMedium2, AsteroidMedium3].map(item => ({ width: 64, height: 61, path: item }))
   const AsteroidsLarge = AsteroidLargeSprites.map(item => ({ width: 128, height: 128, path: item }))
 
-  const idGen = () => {
-    return Date.now().toString(36) + Math.random().toString(36).substring(2);
-  }
-
-  const degToRad = (deg) => {
-    return deg * (Math.PI / 180)
-  }
-  const radToDeg = (rad) => {
-    return rad * (180 / Math.PI)
-  }
-
-  const randomInteger = (min, max) => {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  }
-
-  const playAudio = (audio) => {
-    audio.pause()
-    audio.currentTime = 0
-    audio.play()
-  }
-
-  const checkOverlap = (object, object2) => {
-    if (object2.x >= (object.x + object.width) || object.x >= (object2.x + object2.width)) return false
-    if ((object2.y + object2.height) <= object.y || (object.y + object.height) <= object2.y) return false
-    return true
-  }
-
-  const euclideanTorus = (thingToAffect, setFunction) => {
-    if (Array.isArray(thingToAffect)) {
-      thingToAffect.forEach((object) => {
-        if (object.x + object.width < 0) !setFunction ? object.x = screenWidth : setFunction(prev => [...prev.filter(item => item.id !== object.id), { ...object, x: screenWidth }])
-        if (object.x > screenWidth) !setFunction ? object.x = 0 - object.width : setFunction(prev => [...prev.filter(item => item.id !== object.id), { ...object, x: 0 - object.width }])
-        if (object.y + object.height < 0) !setFunction ? object.y = screenHeight : setFunction(prev => [...prev.filter(item => item.id !== object.id), { ...object, y: screenHeight }])
-        if (object.y > screenHeight) !setFunction ? object.y = 0 - object.height : setFunction(prev => [...prev.filter(item => item.id !== object.id), { ...object, y: 0 - object.height }])
-      })
-    } else if (!Array.isArray(thingToAffect)) {
-      if (thingToAffect.x + thingToAffect.width < 0) setFunction(prev => ({ ...prev, x: prev.x + screenWidth }))
-      if (thingToAffect.x > screenWidth) setFunction(prev => ({ ...prev, x: prev.x - screenWidth }))
-      if (thingToAffect.y + thingToAffect.height < 0) setFunction(prev => ({ ...prev, y: prev.y + screenHeight }))
-      if (thingToAffect.y > screenHeight) setFunction(prev => ({ ...prev, y: prev.y - screenHeight }))
-    }
-  }
-
   const randomCoordinate = (axis) => {
     if (axis === 'x') return Math.floor(Math.random() * screenWidth)
     if (axis === 'y') return Math.floor(Math.random() * screenHeight)
   }
 
-  const objectTemplate = () => {
+  const asteroidTemplate = () => {
     return {
       id: idGen(),
       xVelocity: (Math.random() - 0.5) * asteroidSpeed,
@@ -120,7 +78,7 @@ const useUtilities = (screenWidth, screenHeight) => {
       }
 
       gameObjects.push({
-        ...objectTemplate(),
+        ...asteroidTemplate(),
         ...configueType(objArray),
         ...objArray[Math.floor(Math.random() * objArray.length)],
         x: x ?? tempX,
@@ -133,15 +91,8 @@ const useUtilities = (screenWidth, screenHeight) => {
     AsteroidsSmall,
     AsteroidsMedium,
     AsteroidsLarge,
-    degToRad,
-    radToDeg,
-    randomInteger,
     addAsteroidObject,
-    idGen,
-    playAudio,
-    checkOverlap,
-    euclideanTorus,
   }
 }
 
-export default useUtilities
+export default useAsteroids

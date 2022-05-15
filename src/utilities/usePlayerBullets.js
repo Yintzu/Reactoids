@@ -4,21 +4,20 @@ import BulletSpike from '../assets/BulletSpike.png'
 import BulletSpread from '../assets/BulletSpread.png'
 import BulletLaser from '../assets/BulletLaser.png'
 import { useAudioContext } from '../contexts/AudioProvider'
-import useUtilities from './useUtilities'
+import { idGen, playAudio, degToRad } from './helpers'
 
 const usePlayerBullets = (player) => {
-  const { degToRad, idGen, playAudio } = useUtilities()
   const { shootBulletAudio, shootSpikeAudio, shootLaserAudio } = useAudioContext()
 
-  const speed = player.upgrades.laser ? 1000 : 500
-  const cooldownTime = player.upgrades.spread ? 500 : player.upgrades.mg ? 100 : player.upgrades.laser ? 1000 : 250
+  const speed = player.powerup.laser ? 1000 : 500
+  const cooldownTime = player.powerup.spread ? 500 : player.powerup.mg ? 100 : player.powerup.laser ? 1000 : 250
   const width = 5
   const height = 5
 
   const configureType = () => {
-    if (player.upgrades.spread) return { path: BulletSpread, type: 'spread' }
-    if (player.upgrades.mg) return { path: BulletSpike, type: 'mg' }
-    if (player.upgrades.laser) return { path: BulletLaser, type: 'laser' }
+    if (player.powerup.spread) return { path: BulletSpread, type: 'spread' }
+    if (player.powerup.mg) return { path: BulletSpike, type: 'mg' }
+    if (player.powerup.laser) return { path: BulletLaser, type: 'laser' }
     return { path: Bullet, type: 'bullet' }
   }
 
@@ -39,11 +38,11 @@ const usePlayerBullets = (player) => {
 
   const createBullet = () => {
     if (weaponCooldown) return
-    if (player.upgrades.mg) playAudio(shootSpikeAudio)
-    // else if (player.upgrades.laser) playAudio(shootLaserAudio)
+    if (player.powerup.mg) playAudio(shootSpikeAudio)
+    // else if (player.powerup.laser) playAudio(shootLaserAudio)
     else playAudio(shootBulletAudio)
 
-    if (player.upgrades.spread) setPlayerBullets(prev => [...prev, { ...bulletTemplate() },
+    if (player.powerup.spread) setPlayerBullets(prev => [...prev, { ...bulletTemplate() },
     { ...bulletTemplate(), xVelocity: 0 + speed * Math.sin(degToRad(player.angle + 5)), yVelocity: 0 - speed * Math.cos(degToRad(player.angle + 5)), },
     { ...bulletTemplate(), xVelocity: 0 + speed * Math.sin(degToRad(player.angle - 5)), yVelocity: 0 - speed * Math.cos(degToRad(player.angle - 5)), }])
     else setPlayerBullets(prev => [...prev, { ...bulletTemplate() }])
