@@ -37,9 +37,9 @@ const DevTools = ({ player, setPlayer, fps, gameLoop, asteroidObjects, handleGam
       <section>
         <span>Powerups</span>
         <div className="devBtnRow">
-          <button className="removeBtn" onClick={() => setPlayer(prev => ({ ...prev, upgrades: { spread: true, mg: false, laser: false } }))}>Spread</button>
-          <button className="removeBtn" onClick={() => setPlayer(prev => ({ ...prev, upgrades: { spread: false, mg: true, laser: false } }))}>MG</button>
-          <button className="removeBtn" onClick={() => setPlayer(prev => ({ ...prev, upgrades: { spread: false, mg: false, laser: true } }))}>Laser</button>
+          <button className="removeBtn" onClick={() => setPlayer(prev => ({ ...prev, powerup: { spread: true, mg: false, laser: false } }))}>Spread</button>
+          <button className="removeBtn" onClick={() => setPlayer(prev => ({ ...prev, powerup: { spread: false, mg: true, laser: false } }))}>MG</button>
+          <button className="removeBtn" onClick={() => setPlayer(prev => ({ ...prev, powerup: { spread: false, mg: false, laser: true } }))}>Laser</button>
         </div>
       </section>
     </div>
